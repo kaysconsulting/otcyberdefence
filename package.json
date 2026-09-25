@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "dev:soon": "VITE_SITE_MODE=coming-soon vite",
+    "build:soon": "tsc -b && VITE_SITE_MODE=coming-soon vite build"
   },
   "dependencies": {
     "lucide-react": "^1.48.0",
