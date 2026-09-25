@@ -4,7 +4,9 @@ const u = (id: string) => (w = 1600, h?: number) =>
   `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=${w}${h ? `&h=${h}` : ''}&q=85`
 
 export const photos = {
-  hero: u('1531033056439-63578c0d9f22'), // Sydney Harbour Bridge at night
+  hero: u('1473341304170-971dccb5ac1e'), // transmission towers at dusk
+  harbour: u('1531033056439-63578c0d9f22'), // Sydney Harbour Bridge at night
+  advisory: u('1581091215367-9b6c00b3035a'), // engineer assessing industrial equipment
   rail: u('1646215992825-688426407576'), // Sydney double-deck train under overhead wiring
   signal: u('1612083111232-29f08821e47a'), // rail tracks
   airport: u('1715268358642-fdab48114710'), // airport from the air

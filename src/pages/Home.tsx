@@ -81,7 +81,7 @@ export default function Home() {
           </div>
           <div className="doors">
             <Link to="/consulting" className="door door-blue">
-              <Photo name="control" alt="Industrial control room" width={560} ratio={16 / 8} />
+              <Photo name="advisory" alt="Engineer assessing industrial control equipment" width={560} ratio={16 / 8} />
               <div>
                 <span className="mono num">01</span>
                 <h3>OT Cyber Consulting</h3>
