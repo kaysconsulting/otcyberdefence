@@ -1,12 +1,12 @@
 import { Link } from 'react-router-dom'
-import { caseDetail, caseStudies, partner, sectors, stats, testimonials } from '../content.ts'
+import { caseStudies, partner, sectors, stats, testimonials } from '../content.ts'
 import Photo from '../components/Photo.tsx'
 import Backdrop from '../components/Backdrop.tsx'
 import CtaBand from '../components/CtaBand.tsx'
-import { Arrow, ArrowCircle } from '../components/Icon.tsx'
+import { Arrow, ArrowCircle, External } from '../components/Icon.tsx'
+import { ArrowRight, CircleCheck, EyeOff, Factory, FileText, Fingerprint, Gauge, LayoutGrid, Network, ShieldCheck } from 'lucide-react'
 
 const featured = caseStudies[1]
-const featuredDetail = caseDetail[featured.title]
 
 export default function Home() {
   return (
@@ -81,34 +81,62 @@ export default function Home() {
           </div>
           <div className="doors">
             <Link to="/consulting" className="door door-blue">
-              <Photo name="advisory" alt="Engineer assessing industrial control equipment" width={560} ratio={16 / 8} />
-              <div>
-                <span className="mono num">01</span>
-                <h3>OT Cyber Consulting</h3>
-                <p>SOCI, AESCSF and IEC 62443, delivered by engineers who have secured safety-critical systems.</p>
-                <ul>
-                  <li>SOCI & CIRMP compliance</li>
-                  <li>Framework maturity assessments</li>
-                  <li>OT risk & segmentation design</li>
+              <Photo name="advisory" alt="" width={600} ratio={4 / 5} sizes="(max-width: 980px) 100vw, 600px" />
+              <div className="door-top">
+                <span className="door-label">01 · OT Cyber Consulting</span>
+                <span className="door-proof">
+                  <b>18+ yrs</b> safety-critical OT
+                </span>
+              </div>
+              <div className="door-body">
+                <h3>Know where you stand. Prove it to your board.</h3>
+                <p>
+                  SOCI, AESCSF and IEC 62443 programs led by engineers who have secured safety-critical rail and energy
+                  systems.
+                </p>
+                <ul className="door-points">
+                  <li>
+                    <ShieldCheck size={18} strokeWidth={1.75} /> SOCI & CIRMP compliance
+                  </li>
+                  <li>
+                    <Gauge size={18} strokeWidth={1.75} /> Framework maturity assessments
+                  </li>
+                  <li>
+                    <Network size={18} strokeWidth={1.75} /> OT risk & segmentation design
+                  </li>
                 </ul>
-                <span className="go">
-                  Explore consulting <ArrowCircle />
+                <span className="door-cta">
+                  Explore consulting <ArrowRight size={18} strokeWidth={2} />
                 </span>
               </div>
             </Link>
             <Link to="/protection" className="door door-navy">
-              <Photo name="network" alt="Fibre connections into an industrial network switch" width={560} ratio={16 / 8} />
-              <div>
-                <span className="mono num">02</span>
-                <h3>OT Cyber Protection</h3>
-                <p>BlastShield™ hides critical assets from attackers and deploys without downtime.</p>
-                <ul>
-                  <li>Network cloaking</li>
-                  <li>Passwordless MFA</li>
-                  <li>Microsegmentation</li>
+              <Photo name="network" alt="" width={600} ratio={4 / 5} sizes="(max-width: 980px) 100vw, 600px" />
+              <div className="door-top">
+                <span className="door-label">02 · OT Cyber Protection</span>
+                <span className="door-proof">
+                  <b>Patented</b> zero trust
+                </span>
+              </div>
+              <div className="door-body">
+                <h3>Make your critical assets invisible to attackers.</h3>
+                <p>
+                  BlastShield™ from BlastWave, deployed and supported locally. Protects even unpatchable systems, with no
+                  downtime and no network redesign.
+                </p>
+                <ul className="door-points">
+                  <li>
+                    <EyeOff size={18} strokeWidth={1.75} /> Network cloaking
+                  </li>
+                  <li>
+                    <Fingerprint size={18} strokeWidth={1.75} /> Passwordless MFA
+                  </li>
+                  <li>
+                    <LayoutGrid size={18} strokeWidth={1.75} /> Microsegmentation
+                  </li>
                 </ul>
-                <span className="go">
-                  Explore protection <ArrowCircle />
+                <span className="door-cta">
+                  Explore protection <ArrowRight size={18} strokeWidth={2} />
                 </span>
               </div>
             </Link>
@@ -116,27 +144,81 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 4 · Proof, over an industrial backdrop */}
+      {/* 4 · Proof: one case study, told as a before/after */}
       <section className="proof-band on-image">
         <Backdrop name="refinery" tone="left" />
-        <div className="wrap feature-case">
-          <div>
+        <div className="wrap spotlight">
+          <div className="spot-copy">
             <div className="mono eyebrow">Proven in the field</div>
+            <span className="spot-tag">
+              <Factory size={15} strokeWidth={1.75} /> Manufacturing · BlastWave case study
+            </span>
             <h2>{featured.title}</h2>
             <p className="lead">{featured.body}</p>
-            <Link to="/case-studies" className="btn btn-ghost">
-              Read all four case studies <Arrow />
-            </Link>
+            <div className="hero-actions">
+              <a href={featured.href} target="_blank" rel="noopener noreferrer" className="btn btn-white">
+                Read the case study <FileText size={16} strokeWidth={2} />
+              </a>
+              <Link to="/case-studies" className="btn btn-ghost">
+                All four case studies <Arrow />
+              </Link>
+            </div>
           </div>
-          <div className="metric-stack glass">
-            {featuredDetail.metrics.map((m) => (
-              <div key={m.k}>
-                <b>{m.v}</b>
-                <span>{m.k}</span>
+
+          <figure className="result-card" aria-label="Outcome of the cyber attack">
+            <div className="rc-head">
+              <span className="mono">The result</span>
+              <span className="rc-live">
+                <span className="dot" /> Protected line stayed online
+              </span>
+            </div>
+            <div className="rc-hero">
+              <b>0</b>
+              <span>
+                hours of downtime on the line
+                <br />
+                protected by BlastShield™
+              </span>
+            </div>
+
+            <div className="rc-compare">
+              <div>
+                <div className="rc-row">
+                  <span>Protected line</span>
+                  <b className="ok">Kept running</b>
+                </div>
+                <div className="bar">
+                  <i className="bar-ok" />
+                </div>
               </div>
-            ))}
-            <p className="attrib">BlastWave case study, manufacturing · blastwave.com</p>
-          </div>
+              <div>
+                <div className="rc-row">
+                  <span>Rest of the plant</span>
+                  <b className="bad">Offline 2+ days</b>
+                </div>
+                <div className="bar">
+                  <i className="bar-bad" />
+                </div>
+              </div>
+            </div>
+
+            <div className="rc-foot">
+              <div className="rc-cost">
+                <b>US$4.8M</b>
+                <span>revenue lost in unprotected areas</span>
+              </div>
+              <div className="rc-outcome">
+                <CircleCheck size={20} strokeWidth={1.75} />
+                <span>Management then extended BlastShield™ across the whole network.</span>
+              </div>
+            </div>
+            <figcaption>
+              Source:{' '}
+              <a href={featured.href} target="_blank" rel="noopener noreferrer">
+                BlastWave manufacturing case study <External />
+              </a>
+            </figcaption>
+          </figure>
         </div>
       </section>
 
