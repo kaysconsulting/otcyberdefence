@@ -10,7 +10,7 @@ export default function Consulting() {
   return (
     <>
       <PageHero
-        photo="control"
+        photo="advisory"
         eyebrow="01 · OT Cyber Consulting"
         title="Governance, risk and compliance, built for operational technology"
         lead="Most compliance programs are designed for IT and then stretched to fit the plant floor. Ours start with the plant."
