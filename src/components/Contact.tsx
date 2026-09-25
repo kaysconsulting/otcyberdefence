@@ -1,83 +1,84 @@
 import { useState } from 'react'
-import { company } from '../content.ts'
+import { company, formServices } from '../content.ts'
 import Placeholder from './Placeholder.tsx'
-import { Arrow } from './Icon.tsx'
+import Title from './Title.tsx'
 
+// Kays "Let's work together" form.
 export default function Contact() {
   const [sent, setSent] = useState(false)
-
   return (
-    <section className="cta" id="contact">
+    <section className="work-together" id="contact">
       <div className="wrap">
-        <div>
-          <div className="mono eyebrow">Request a briefing</div>
-          <h2>Tell us about your organisation</h2>
-          <p className="lead">
-            Tell us a little about your organisation. A specialist will contact you within one business day to arrange
-            a time.
-          </p>
-          <div className="contact-list">
-            <div>
-              <b>Office</b>
-              <br />
-              {company.address}
+        <Title text="Let’s {work} together" />
+        <p className="sub">Simply fill in this form and one of our specialists will be in touch.</p>
+        {sent ? (
+          <div className="sent">
+            <h3>Thank you</h3>
+            <p>We will be in touch within one business day.</p>
+          </div>
+        ) : (
+          /* TODO: connect to a form backend / email service. */
+          <form
+            onSubmit={(e) => {
+              e.preventDefault()
+              setSent(true)
+            }}
+          >
+            <div className="two">
+              <label>
+                First Name <i>*</i>
+                <input name="firstName" required />
+              </label>
+              <label>
+                Last Name <i>*</i>
+                <input name="lastName" required />
+              </label>
             </div>
-            <div>
-              <b>Email</b>
-              <br />
-              {company.email ? <a href={`mailto:${company.email}`}>{company.email}</a> : <Placeholder value="" label="email address" />}
+            <div className="two">
+              <label>
+                Email <i>*</i>
+                <input name="email" type="email" required />
+              </label>
+              <label>
+                Phone <i>*</i>
+                <input name="phone" type="tel" required />
+              </label>
             </div>
-            <div>
-              <b>Phone</b>
-              <br />
-              {company.phone ? <a href={`tel:${company.phone.replace(/\s/g, '')}`}>{company.phone}</a> : <Placeholder value="" label="phone number" />}
-            </div>
+            <label>
+              Organisation
+              <input name="organisation" />
+            </label>
+            <fieldset>
+              <legend>Our Services</legend>
+              {formServices.map((s) => (
+                <label key={s} className="check">
+                  <input type="checkbox" name="services" value={s} /> {s}
+                </label>
+              ))}
+            </fieldset>
+            <label>
+              Message
+              <textarea name="message" rows={5} />
+            </label>
+            <button className="btn" type="submit">
+              Submit
+            </button>
+          </form>
+        )}
+        <div className="contact-list">
+          <div>
+            <b>Office</b>
+            {company.address}
+          </div>
+          <div>
+            <b>Email</b>
+            {company.email ? <a href={`mailto:${company.email}`}>{company.email}</a> : <Placeholder value="" label="email address" />}
+          </div>
+          <div>
+            <b>Phone</b>
+            {company.phone ? <a href={`tel:${company.phone.replace(/\s/g, '')}`}>{company.phone}</a> : <Placeholder value="" label="phone number" />}
           </div>
         </div>
-        {/* TODO: wire to a real endpoint (email service / form backend). Currently only shows a thank-you. */}
-        <form
-          onSubmit={(e) => {
-            e.preventDefault()
-            setSent(true)
-          }}
-        >
-          {sent ? (
-            <>
-              <h3>Thank you</h3>
-              <p style={{ color: 'var(--muted)' }}>We will be in touch within one business day.</p>
-            </>
-          ) : (
-            <>
-              <div className="two">
-                <label>
-                  Name
-                  <input name="name" required />
-                </label>
-                <label>
-                  Organisation
-                  <input name="organisation" required />
-                </label>
-              </div>
-              <div className="two">
-                <label>
-                  Email
-                  <input name="email" type="email" required />
-                </label>
-                <label>
-                  Phone
-                  <input name="phone" type="tel" />
-                </label>
-              </div>
-              <label>
-                How can we help?
-                <textarea name="message" rows={4} />
-              </label>
-              <button className="btn btn-primary" type="submit" style={{ border: 0, cursor: 'pointer', justifyContent: 'center' }}>
-                Request a briefing <Arrow />
-              </button>
-            </>
-          )}
-        </form>
       </div>
     </section>
   )

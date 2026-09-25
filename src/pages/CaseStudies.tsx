@@ -10,7 +10,7 @@ export default function CaseStudies() {
       <PageHero
         photo="refinery"
         eyebrow="Case studies"
-        title="Outcomes from real-world deployments"
+        title="Outcomes from {Real-World} Deployments"
         lead="Four published BlastWave case studies from oil and gas, manufacturing, hazardous logistics and technology. Each links to the original document."
         crumbs={[{ to: '/case-studies', label: 'Case studies' }]}
       />

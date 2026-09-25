@@ -605,3 +605,41 @@ export const sectors: Sector[] = [
     reading: { label: 'BlastWave: government', href: 'https://www.blastwave.com/government' },
   },
 ]
+
+// Home FAQs (Kays-style accordion). Keep answers factual.
+export const faqs = [
+  {
+    q: 'What does OT Cyber Defence do?',
+    a: 'We help Australian critical infrastructure operators meet their SOCI obligations and secure their operational technology. We deliver OT cyber consulting (SOCI, AESCSF, IEC 62443, NIST CSF) and OT cyber protection as the official Australian partner of BlastWave, deploying its patented BlastShield™ platform.',
+  },
+  {
+    q: 'Who do you work with?',
+    a: 'Operators of the systems SOCI protects: rail and transport, aviation and airports, energy, water, oil and gas, ports, mining and government facilities.',
+  },
+  {
+    q: 'Can you protect legacy systems that cannot be patched?',
+    a: 'Yes. BlastShield™ cloaks PLCs, RTUs and HMIs so they cannot be discovered, and creates a virtual air-gap around equipment that cannot be updated.',
+  },
+  {
+    q: 'Does deployment need downtime or a network redesign?',
+    a: 'BlastShield™ runs as a software overlay on your existing network, with no re-IPing or redesign. We plan every deployment around your operations.',
+  },
+  {
+    q: 'Which frameworks do you work with?',
+    a: 'SOCI Act 2018 and the CIRMP Rules, AESCSF, ISA/IEC 62443, NIST CSF 2.0, NIST SP 800-82, ISO/IEC 27001 and the ACSC Essential Eight.',
+  },
+  {
+    q: 'How do I get started?',
+    a: 'Book an appointment for a 30-minute briefing. We will discuss your obligations and systems, and agree the right first step.',
+  },
+]
+
+export const formServices = [
+  'SOCI & CIRMP compliance',
+  'AESCSF assessment',
+  'IEC 62443 assessment & design',
+  'OT risk assessment',
+  'BlastShield™ OT protection',
+  'Secure remote access',
+  'Incident response readiness',
+]

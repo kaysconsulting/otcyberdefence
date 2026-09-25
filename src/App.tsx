@@ -11,7 +11,6 @@ import SectorPage from './pages/SectorPage.tsx'
 import Expertise from './pages/Expertise.tsx'
 import ContactPage from './pages/ContactPage.tsx'
 import NotFound from './pages/NotFound.tsx'
-import Reveal from './components/Reveal.tsx'
 
 function ScrollToTop() {
   const { pathname, hash } = useLocation()
@@ -41,7 +40,6 @@ export default function App() {
         </Routes>
       </main>
       <Footer />
-      <Reveal />
     </>
   )
 }

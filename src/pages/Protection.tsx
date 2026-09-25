@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { featureDetail, partner, protectionFeatures, testimonials } from '../content.ts'
 import PageHero from '../components/PageHero.tsx'
+import Title from '../components/Title.tsx'
 import Icon, { Arrow, External } from '../components/Icon.tsx'
 import More, { Evidence } from '../components/More.tsx'
 import CloakDiagram from '../components/CloakDiagram.tsx'
@@ -12,7 +13,7 @@ export default function Protection() {
       <PageHero
         photo="network"
         eyebrow="02 · OT Cyber Protection"
-        title="Make critical assets invisible to attackers"
+        title="Make Critical Assets {Invisible} to Attackers"
         lead="As BlastWave's official Australian partner, we design, deploy and support BlastShield™, a patented zero trust platform that protects even unpatchable legacy systems without downtime."
         crumbs={[{ to: '/protection', label: 'Protection' }]}
       />
@@ -48,7 +49,7 @@ export default function Protection() {
       <section className="light">
         <div className="wrap">
           <div className="mono eyebrow">Technology partner</div>
-          <h2>Official Australian partner of {partner.name}</h2>
+          <Title text={`Official Australian Partner of {${partner.name}}`} />
           <p className="lead">
             Local architecture, deployment and support, with every deployment mapped to your SOCI obligations and IEC
             62443 zones and conduits.
@@ -122,7 +123,7 @@ export default function Protection() {
         </div>
       </section>
 
-      <CtaBand title="See BlastShield™ on your own network" body="A live demonstration against a representative OT environment, run by our team." />
+      <CtaBand title="See {BlastShield™} on Your Own Network" body="A live demonstration against a representative OT environment, run by our team." />
     </>
   )
 }

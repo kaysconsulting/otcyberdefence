@@ -7,7 +7,7 @@ export default function ContactPage() {
       <PageHero
         photo="jetbridge"
         eyebrow="Contact"
-        title="Book a briefing with an OT security specialist"
+        title="Book an Appointment with an {OT Security} Specialist"
         lead="Thirty minutes on your obligations, your systems and where to start. No obligation."
         crumbs={[{ to: '/contact', label: 'Contact' }]}
         depth={false}
