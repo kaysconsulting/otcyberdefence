@@ -32,6 +32,8 @@ git push -u origin develop
 
 `main` = what the public domain serves. `develop` = the test site.
 
+> **Order matters:** the Coming Soon code must be pushed to GitHub (step 1) before the environment variable in step 3 can have any effect.
+
 ## 2. Create the Vercel project
 
 1. Go to **vercel.com → Add New… → Project**.
@@ -68,9 +70,11 @@ Vercel then shows the DNS records to create. At your domain registrar (GoDaddy, 
 
 | Type | Name / Host | Value |
 |---|---|---|
-| A | `@` | `76.76.21.21` |
-| CNAME | `www` | `cname.vercel-dns.com` |
-| CNAME | `test` | `cname.vercel-dns.com` |
+| A | `@` | `216.150.1.1` |
+| CNAME | `www` | the project-specific value Vercel shows, e.g. `a02108169f7c1c09.vercel-dns-016.com` |
+| CNAME | `test` | the project-specific value Vercel shows for `test` |
+
+(The older `76.76.21.21` / `cname.vercel-dns.com` still work. Vercel just flags them as "DNS Change Recommended".)
 
 Always use the exact values Vercel displays for your project if they differ. DNS usually works in minutes, sometimes up to 24 hours. Vercel issues the HTTPS certificates automatically.
 
