@@ -4,6 +4,7 @@ import PageHero from '../components/PageHero.tsx'
 import More, { Evidence } from '../components/More.tsx'
 import CtaBand from '../components/CtaBand.tsx'
 import NotFound from './NotFound.tsx'
+import { Arrow, External } from '../components/Icon.tsx'
 
 export default function SectorPage() {
   const { slug } = useParams()
@@ -32,7 +33,7 @@ export default function SectorPage() {
               <h3>Governance, risk and compliance</h3>
               <p>{s.consulting}</p>
               <Link to="/consulting" className="text-link small">
-                Consulting services →
+                Consulting services <Arrow />
               </Link>
             </div>
             <div className="card">
@@ -40,7 +41,7 @@ export default function SectorPage() {
               <h3>BlastShield™ zero trust</h3>
               <p>{s.protection}</p>
               <Link to="/protection" className="text-link small">
-                How BlastShield works →
+                How BlastShield works <Arrow />
               </Link>
             </div>
           </div>
@@ -68,7 +69,7 @@ export default function SectorPage() {
             {s.reading && (
               <Evidence>
                 <a href={s.reading.href} target="_blank" rel="noopener noreferrer">
-                  {s.reading.label} ↗
+                  {s.reading.label} <External />
                 </a>
               </Evidence>
             )}

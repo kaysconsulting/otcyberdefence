@@ -66,7 +66,7 @@ export default function Consulting() {
           <More label="Frameworks a CIRMP can align to">
             <div className="fw" style={{ marginTop: 0 }}>
               {frameworks.map((f) => (
-                <span key={f} className="dark-chip">
+                <span key={f} >
                   {f}
                 </span>
               ))}

@@ -2,6 +2,7 @@ import { caseDetail, caseStudies } from '../content.ts'
 import PageHero from '../components/PageHero.tsx'
 import More, { Evidence } from '../components/More.tsx'
 import CtaBand from '../components/CtaBand.tsx'
+import { External } from '../components/Icon.tsx'
 
 export default function CaseStudies() {
   return (
@@ -33,13 +34,13 @@ export default function CaseStudies() {
                       </dl>
                       <Evidence>
                         <a href={c.href} target="_blank" rel="noopener noreferrer">
-                          Original case study (PDF, BlastWave) ↗
+                          Original case study (PDF, BlastWave) <External />
                         </a>
                       </Evidence>
                     </More>
                   )}
                 </div>
-                <div className="metric-stack light-metrics">
+                <div className="metric-stack">
                   {d?.metrics.map((m) => (
                     <div key={m.k}>
                       <b>{m.v}</b>

@@ -7,7 +7,7 @@ export default function Footer() {
     <footer>
       <div className="wrap">
         <div>
-          <b style={{ color: 'var(--text)' }}>{company.legalName}</b> · ACN <Placeholder value={company.acn} label="ACN" />
+          <b>{company.legalName}</b> · ACN <Placeholder value={company.acn} label="ACN" />
           <br />
           {company.address}
           <br />

@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import { featureDetail, partner, protectionFeatures, testimonials } from '../content.ts'
 import PageHero from '../components/PageHero.tsx'
-import Icon from '../components/Icon.tsx'
+import Icon, { Arrow, External } from '../components/Icon.tsx'
 import More, { Evidence } from '../components/More.tsx'
 import CloakDiagram from '../components/CloakDiagram.tsx'
 import CtaBand from '../components/CtaBand.tsx'
@@ -63,7 +63,7 @@ export default function Protection() {
           </dl>
 
           <More label="Platform components">
-            <div className="components light-components">
+            <div className="components">
               {partner.components.map((c) => (
                 <div key={c.name}>
                   <h3>{c.name}</h3>
@@ -80,7 +80,7 @@ export default function Protection() {
             </div>
           </More>
           <More label="Organisations using BlastShield™">
-            <ul className="customers light-customers">
+            <ul className="customers">
               {partner.customers.map((c) => (
                 <li key={c}>{c}</li>
               ))}
@@ -88,7 +88,7 @@ export default function Protection() {
             <Evidence>
               <span>Named by BlastWave as customers of its platform.</span>
               <a href="https://www.blastwave.com/company" target="_blank" rel="noopener noreferrer">
-                blastwave.com/company ↗
+                blastwave.com/company <External />
               </a>
             </Evidence>
           </More>
@@ -116,7 +116,7 @@ export default function Protection() {
           ))}
           <p style={{ marginTop: 28 }}>
             <Link to="/case-studies" className="text-link">
-              See the results in four published case studies →
+              See the results in four published case studies <Arrow />
             </Link>
           </p>
         </div>

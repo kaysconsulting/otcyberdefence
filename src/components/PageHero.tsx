@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
-import { photos, type PhotoKey } from '../media.ts'
+import type { PhotoKey } from '../media.ts'
+import Backdrop from './Backdrop.tsx'
 
 type Props = {
   eyebrow: string
@@ -7,11 +8,13 @@ type Props = {
   lead: string
   photo: PhotoKey
   crumbs?: { to: string; label: string }[]
+  depth?: boolean
 }
 
-export default function PageHero({ eyebrow, title, lead, photo, crumbs = [] }: Props) {
+export default function PageHero({ eyebrow, title, lead, photo, crumbs = [], depth = true }: Props) {
   return (
-    <section className="page-hero" style={{ backgroundImage: `url(${photos[photo](2000)})` }}>
+    <section className="page-hero on-image">
+      <Backdrop name={photo} eager />
       <div className="wrap">
         <nav className="crumbs mono" aria-label="Breadcrumb">
           <Link to="/">Home</Link>
@@ -25,7 +28,7 @@ export default function PageHero({ eyebrow, title, lead, photo, crumbs = [] }: P
         <div className="mono eyebrow">{eyebrow}</div>
         <h1>{title}</h1>
         <p className="lead">{lead}</p>
-        <DepthGuide />
+        {depth && <DepthGuide />}
       </div>
     </section>
   )

@@ -14,14 +14,14 @@ export const pillars = [
     href: '#consulting',
     title: 'OT Cyber Consulting',
     body: 'SOCI, AESCSF, IEC 62443 and NIST CSF. Risk, governance and compliance delivered by people who understand operational technology.',
-    go: 'Governance, risk & compliance →',
+    go: 'Governance, risk & compliance',
   },
   {
     num: '02',
     href: '#protection',
     title: 'OT Cyber Protection',
     body: 'Official Australian partner of BlastWave. Its patented BlastShield™ platform makes critical assets invisible to attackers, with passwordless access and microsegmentation, and no downtime.',
-    go: 'Patented zero trust technology →',
+    go: 'Patented zero trust technology',
   },
 ]
 
@@ -34,15 +34,21 @@ export const stats = [
 
 export type IconName =
   | 'shieldCheck'
-  | 'chart'
-  | 'clock'
-  | 'bars'
-  | 'chat'
-  | 'target'
+  | 'gauge'
+  | 'activity'
+  | 'network'
+  | 'presentation'
+  | 'siren'
   | 'eyeOff'
-  | 'lock'
-  | 'grid'
-  | 'plus'
+  | 'fingerprint'
+  | 'layoutGrid'
+  | 'screenShare'
+  | 'train'
+  | 'hardHat'
+  | 'clipboardCheck'
+  | 'fileSearch'
+  | 'wrench'
+  | 'cable'
 
 export const consultingServices: {
   icon: IconName
@@ -64,7 +70,7 @@ export const consultingServices: {
     ],
   },
   {
-    icon: 'chart',
+    icon: 'gauge',
     tag: 'Assessment',
     title: 'Framework maturity assessments',
     body: 'Independent, evidence-based assessment against the framework that fits your sector and regulator.',
@@ -76,7 +82,7 @@ export const consultingServices: {
     ],
   },
   {
-    icon: 'clock',
+    icon: 'activity',
     tag: 'Risk',
     title: 'OT risk management',
     body: 'Cyber risk expressed in operational terms: safety, availability and production, not just data.',
@@ -88,19 +94,19 @@ export const consultingServices: {
     ],
   },
   {
-    icon: 'bars',
+    icon: 'network',
     tag: 'Architecture',
     title: 'ICS & SCADA segmentation design',
     body: 'Purdue-model reference architectures, zones and conduits, and secure remote access designs.',
   },
   {
-    icon: 'chat',
+    icon: 'presentation',
     tag: 'Strategy',
     title: 'OT cyber strategy & board advisory',
     body: 'Executive briefings, investment prioritisation and multi-year programs that tie spend to risk reduction.',
   },
   {
-    icon: 'target',
+    icon: 'siren',
     tag: 'Resilience',
     title: 'Incident response readiness',
     body: 'OT-specific response plans, playbooks and tabletop exercises aligned to SOCI reporting timeframes.',
@@ -131,17 +137,17 @@ export const protectionFeatures: { icon: IconName; title: string; body: string }
     body: 'HMIs, PLCs and RTUs become invisible to scanners and attackers, stopping reconnaissance, the first step in every OT attack chain.',
   },
   {
-    icon: 'lock',
+    icon: 'fingerprint',
     title: 'Passwordless MFA',
     body: 'Identity-based access with biometric authentication removes stolen and shared passwords from the equation.',
   },
   {
-    icon: 'grid',
+    icon: 'layoutGrid',
     title: 'Microsegmentation',
     body: 'Software-defined segments contain any breach and stop lateral movement, without complex firewall rule sets.',
   },
   {
-    icon: 'plus',
+    icon: 'screenShare',
     title: 'Secure remote access',
     body: 'Replace legacy VPNs and jump boxes with zero trust access and recorded sessions for vendors and engineers.',
   },
@@ -278,32 +284,32 @@ export const expertise = {
     'Our practitioners bring more than 18 years of hands-on OT and ICS security across transport, energy and renewables, water, mining, utilities and defence. We apply IEC 62443, NIST SP 800-82 and ISO/IEC 27001 alongside functional safety standards, in environments where a failure puts safety and essential services at risk.',
   highlights: [
     {
-      icon: 'shieldCheck' as IconName,
+      icon: 'train' as IconName,
       title: 'Major transport programs',
       body: 'Senior OT cybersecurity authority on major Transport for NSW programs, accountable for governance, assurance and formal sign-off across safety-critical rail and transport systems.',
     },
     {
-      icon: 'target' as IconName,
+      icon: 'hardHat' as IconName,
       title: 'Cyber and functional safety, together',
       body: 'IEC 62443 integrated with IEC 61508 and EN 50126. We add the cyber view to HAZOP and safety cases, so cyber-induced failure modes are captured in the safety risk framework.',
     },
     {
-      icon: 'chart' as IconName,
+      icon: 'clipboardCheck' as IconName,
       title: 'IEC 62443 and AESCSF programs',
       body: 'Zone and conduit design, security level verification, IEC 62443-3-2 risk assessments and AESCSF maturity assessments across rail, water, power, gas, solar and oil & gas.',
     },
     {
-      icon: 'bars' as IconName,
+      icon: 'fileSearch' as IconName,
       title: 'Vendor and integrator assurance',
       body: 'Review of vendor Cybersecurity Management Plans and integrator designs, OT security requirements for RFTs, and FAT/SAT evidence validated before acceptance.',
     },
     {
-      icon: 'grid' as IconName,
+      icon: 'wrench' as IconName,
       title: 'Design, commissioning and delivery',
       body: 'Secure OT architectures designed, tested and commissioned in live operational environments, including SCADA, PLC and BMS delivery on major international infrastructure projects.',
     },
     {
-      icon: 'lock' as IconName,
+      icon: 'cable' as IconName,
       title: 'Industrial networks from the ground up',
       body: 'Resilient, segmented OT/IT networks and SCADA operations across geographically dispersed mining and refinery sites.',
     },

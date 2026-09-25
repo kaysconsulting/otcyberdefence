@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { company } from '../content.ts'
 import Placeholder from './Placeholder.tsx'
+import { Arrow } from './Icon.tsx'
 
 export default function Contact() {
   const [sent, setSent] = useState(false)
@@ -9,8 +10,8 @@ export default function Contact() {
     <section className="cta" id="contact">
       <div className="wrap">
         <div>
-          <div className="mono eyebrow">Book a briefing</div>
-          <h1>Start with a 30-minute briefing</h1>
+          <div className="mono eyebrow">Request a briefing</div>
+          <h2>Tell us about your organisation</h2>
           <p className="lead">
             Tell us a little about your organisation. A specialist will contact you within one business day to arrange
             a time.
@@ -72,7 +73,7 @@ export default function Contact() {
                 <textarea name="message" rows={4} />
               </label>
               <button className="btn btn-primary" type="submit" style={{ border: 0, cursor: 'pointer', justifyContent: 'center' }}>
-                Request a briefing →
+                Request a briefing <Arrow />
               </button>
             </>
           )}

@@ -1,5 +1,7 @@
 // Photography: Unsplash (free Unsplash License). Swap for your own site photography any time.
-const u = (id: string) => (w = 1600) => `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=${w}&q=70`
+// High resolution: q=85, and Photo serves 1x/1.5x/2x widths so images stay sharp on retina screens.
+const u = (id: string) => (w = 1600, h?: number) =>
+  `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=${w}${h ? `&h=${h}` : ''}&q=85`
 
 export const photos = {
   hero: u('1531033056439-63578c0d9f22'), // Sydney Harbour Bridge at night
