@@ -1,22 +1,24 @@
 import { Link } from 'react-router-dom'
 import type { PhotoKey } from '../media.ts'
-import Backdrop from './Backdrop.tsx'
+import Title from './Title.tsx'
+import Chevrons from './Chevrons.tsx'
 
 type Props = {
-  eyebrow: string
+  eyebrow?: string
   title: string
   lead: string
-  photo: PhotoKey
+  photo?: PhotoKey
   crumbs?: { to: string; label: string }[]
   depth?: boolean
 }
 
-export default function PageHero({ eyebrow, title, lead, photo, crumbs = [], depth = true }: Props) {
+// Kays-style inner page header: light band, breadcrumb, black title with red key phrase, one button.
+export default function PageHero({ title, lead, crumbs = [] }: Props) {
   return (
-    <section className="page-hero on-image">
-      <Backdrop name={photo} eager />
+    <section className="page-hero">
+      <Chevrons dir="left" color="blue" className="ph-chev" />
       <div className="wrap">
-        <nav className="crumbs mono" aria-label="Breadcrumb">
+        <nav className="crumbs" aria-label="Breadcrumb">
           <Link to="/">Home</Link>
           {crumbs.map((c) => (
             <span key={c.to}>
@@ -25,30 +27,16 @@ export default function PageHero({ eyebrow, title, lead, photo, crumbs = [], dep
             </span>
           ))}
         </nav>
-        <div className="mono eyebrow">{eyebrow}</div>
-        <h1>{title}</h1>
+        <Title as="h1" text={title} />
         <p className="lead">{lead}</p>
-        {depth && <DepthGuide />}
+        <Link to="/contact" className="btn">
+          Get a quote
+        </Link>
       </div>
     </section>
   )
 }
 
-// Tells readers how the page is layered so they can stop at the depth they need.
 export function DepthGuide() {
-  return (
-    <div className="depth" aria-label="How this page is organised">
-      <span>
-        <b>1</b> Overview
-      </span>
-      <i />
-      <span>
-        <b>2</b> Detail <small>open any card</small>
-      </span>
-      <i />
-      <span>
-        <b>3</b> Evidence <small>sources & standards</small>
-      </span>
-    </div>
-  )
+  return null
 }

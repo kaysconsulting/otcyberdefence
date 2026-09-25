@@ -17,7 +17,7 @@ export default function SectorPage() {
       <PageHero
         photo={s.photo}
         eyebrow={`Sector · ${s.name}`}
-        title={s.summary}
+        title={`{${s.name}}: ${s.summary}`}
         lead={`How we help ${s.name.toLowerCase()} operators meet their obligations and protect the systems that matter.`}
         crumbs={[
           { to: '/sectors', label: 'Sectors' },

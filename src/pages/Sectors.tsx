@@ -11,7 +11,7 @@ export default function Sectors() {
       <PageHero
         photo="rail"
         eyebrow="Sectors"
-        title="Built for the sectors SOCI protects"
+        title="Built for the Sectors {SOCI Protects}"
         lead="Choose your sector to see the systems in scope, the regulation that applies and how we help."
         crumbs={[{ to: '/sectors', label: 'Sectors' }]}
       />

@@ -1,293 +1,198 @@
 import { Link } from 'react-router-dom'
-import { caseStudies, partner, sectors, stats, testimonials } from '../content.ts'
+import { EyeOff, Fingerprint, LayoutGrid, ScreenShare } from 'lucide-react'
+import { caseDetail, caseStudies, partner, sectors, testimonials } from '../content.ts'
+import Title from '../components/Title.tsx'
+import Chevrons from '../components/Chevrons.tsx'
 import Photo from '../components/Photo.tsx'
-import Backdrop from '../components/Backdrop.tsx'
-import CtaBand from '../components/CtaBand.tsx'
-import { Arrow, ArrowCircle, External } from '../components/Icon.tsx'
-import { ArrowRight, CircleCheck, EyeOff, Factory, FileText, Fingerprint, Gauge, LayoutGrid, Network, ShieldCheck } from 'lucide-react'
+import PurdueDiagram from '../components/PurdueDiagram.tsx'
+import Faq from '../components/Faq.tsx'
+import Contact from '../components/Contact.tsx'
+import { Arrow, External } from '../components/Icon.tsx'
+
+const services = [
+  {
+    to: '/consulting',
+    title: 'OT Cyber Consulting',
+    body: 'Expert guidance on SOCI, AESCSF and IEC 62443. We assess your OT security posture, find the gaps and build a practical, risk-based program your board can sign off.',
+  },
+  {
+    to: '/protection',
+    title: 'OT Cyber Protection',
+    body: 'As the official Australian partner of BlastWave, we deploy the patented BlastShield™ platform to hide critical assets from attackers, with no downtime.',
+  },
+  {
+    to: '/consulting',
+    title: 'Critical Infrastructure Compliance',
+    body: 'CIRMP development, annual board reporting and incident reporting readiness under the Security of Critical Infrastructure Act 2018.',
+  },
+  {
+    to: '/sectors',
+    title: 'Sector Specialists',
+    body: 'Rail and transport, aviation, energy, water, ports, mining and government: the sectors SOCI protects.',
+  },
+]
+
+const benefits = [
+  { icon: EyeOff, title: 'Network Cloaking', body: 'Make PLCs, RTUs and HMIs invisible to scanners and attackers.' },
+  { icon: Fingerprint, title: 'Passwordless MFA', body: 'Remove stolen and shared passwords from the equation.' },
+  { icon: LayoutGrid, title: 'Microsegmentation', body: 'Contain a breach and stop lateral movement across the plant.' },
+  { icon: ScreenShare, title: 'Secure Remote Access', body: 'Replace VPNs with recorded, zero trust access for vendors.' },
+]
 
 const featured = caseStudies[1]
+const metrics = caseDetail[featured.title].metrics
 
 export default function Home() {
   return (
     <>
-      {/* 1 · Full-bleed hero: who we are, in one line */}
-      <section className="home-hero on-image">
-        <Backdrop name="hero" eager />
-        <div className="wrap">
-          <div className="partner-badge">
-            <span className="dot" />
-            <span>
-              Official Australian partner of <b>BlastWave</b> · BlastShield™ patented zero trust OT platform
-            </span>
-          </div>
-          <h1>
-            Compliance you can prove.
-            <br />
-            <span>Protection that's already proven.</span>
-          </h1>
-          <p className="lead">
-            OT cybersecurity for the systems that run Australia's transport, energy, water and government
-            infrastructure.
-          </p>
-          <div className="hero-actions">
-            <Link to="/contact" className="btn btn-primary">
-              Book a briefing <Arrow />
-            </Link>
-            <Link to="/case-studies" className="btn btn-ghost">
-              See the evidence
-            </Link>
-          </div>
+      {/* Hero: the Kays banner composition */}
+      <section className="k-hero">
+        <Chevrons dir="left" color="blue" className="k-hero-chev-top" />
+        <div className="k-hero-img">
+          <img src="/brand/hero-visual.png" alt="Phone showing a security shield and padlock" width={471} height={313} />
         </div>
-        <div className="hero-stats">
-          <div className="wrap">
-            {stats.map((s) => (
-              <div key={s.label} className="stat">
-                <b>
-                  {s.value}
-                  {s.sup && <sup>{s.sup}</sup>}
-                </b>
-                <span>{s.label}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* 2 · Trust strip */}
-      <div className="trust">
-        <div className="wrap">
-          <span className="mono">BlastShield™ is trusted by</span>
-          <ul className="wordmarks">
-            {partner.customers.slice(0, 5).map((c) => (
-              <li key={c}>{c}</li>
-            ))}
-          </ul>
-        </div>
-      </div>
-
-      {/* 3 · What we do: two doors */}
-      <section>
-        <div className="wrap">
-          <div className="section-head">
-            <div>
-              <div className="mono eyebrow">What we do</div>
-              <h2>Two services. One accountable partner.</h2>
-            </div>
+        <div className="wrap k-hero-grid">
+          <div className="k-hero-copy">
+            <Title as="h1" text="Your {Trusted Partner} in OT Cybersecurity and Critical Infrastructure Compliance." />
             <p className="lead">
-              Advice without implementation leaves gaps. Technology without governance can't be proven. We deliver
-              both.
+              Tailored OT security consulting and field-proven protection for Australia's transport, energy, water and
+              government infrastructure.
             </p>
-          </div>
-          <div className="doors">
-            <Link to="/consulting" className="door door-blue">
-              <Photo name="advisory" alt="" width={600} ratio={4 / 5} sizes="(max-width: 980px) 100vw, 600px" />
-              <div className="door-top">
-                <span className="door-label">01 · OT Cyber Consulting</span>
-                <span className="door-proof">
-                  <b>18+ yrs</b> safety-critical OT
-                </span>
-              </div>
-              <div className="door-body">
-                <h3>Know where you stand. Prove it to your board.</h3>
-                <p>
-                  SOCI, AESCSF and IEC 62443 programs led by engineers who have secured safety-critical rail and energy
-                  systems.
-                </p>
-                <ul className="door-points">
-                  <li>
-                    <ShieldCheck size={18} strokeWidth={1.75} /> SOCI & CIRMP compliance
-                  </li>
-                  <li>
-                    <Gauge size={18} strokeWidth={1.75} /> Framework maturity assessments
-                  </li>
-                  <li>
-                    <Network size={18} strokeWidth={1.75} /> OT risk & segmentation design
-                  </li>
-                </ul>
-                <span className="door-cta">
-                  Explore consulting <ArrowRight size={18} strokeWidth={2} />
-                </span>
-              </div>
-            </Link>
-            <Link to="/protection" className="door door-navy">
-              <Photo name="network" alt="" width={600} ratio={4 / 5} sizes="(max-width: 980px) 100vw, 600px" />
-              <div className="door-top">
-                <span className="door-label">02 · OT Cyber Protection</span>
-                <span className="door-proof">
-                  <b>Patented</b> zero trust
-                </span>
-              </div>
-              <div className="door-body">
-                <h3>Make your critical assets invisible to attackers.</h3>
-                <p>
-                  BlastShield™ from BlastWave, deployed and supported locally. Protects even unpatchable systems, with no
-                  downtime and no network redesign.
-                </p>
-                <ul className="door-points">
-                  <li>
-                    <EyeOff size={18} strokeWidth={1.75} /> Network cloaking
-                  </li>
-                  <li>
-                    <Fingerprint size={18} strokeWidth={1.75} /> Passwordless MFA
-                  </li>
-                  <li>
-                    <LayoutGrid size={18} strokeWidth={1.75} /> Microsegmentation
-                  </li>
-                </ul>
-                <span className="door-cta">
-                  Explore protection <ArrowRight size={18} strokeWidth={2} />
-                </span>
-              </div>
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* 4 · Proof: one case study, told as a before/after */}
-      <section className="proof-band on-image">
-        <Backdrop name="refinery" tone="left" />
-        <div className="wrap spotlight">
-          <div className="spot-copy">
-            <div className="mono eyebrow">Proven in the field</div>
-            <span className="spot-tag">
-              <Factory size={15} strokeWidth={1.75} /> Manufacturing · BlastWave case study
-            </span>
-            <h2>{featured.title}</h2>
-            <p className="lead">{featured.body}</p>
-            <div className="hero-actions">
-              <a href={featured.href} target="_blank" rel="noopener noreferrer" className="btn btn-white">
-                Read the case study <FileText size={16} strokeWidth={2} />
-              </a>
-              <Link to="/case-studies" className="btn btn-ghost">
-                All four case studies <Arrow />
+            <div className="btn-row">
+              <Link to="/contact" className="btn">
+                Contact Us
+              </Link>
+              <Link to="/case-studies" className="btn btn-outline">
+                See the evidence
               </Link>
             </div>
+            <p className="partner-line">
+              Official Australian partner of <b>BlastWave</b> · BlastShield™ patented zero trust OT platform
+            </p>
           </div>
+        </div>
+        <Chevrons className="k-hero-chev-bottom" />
+      </section>
 
-          <figure className="result-card" aria-label="Outcome of the cyber attack">
-            <div className="rc-head">
-              <span className="mono">The result</span>
-              <span className="rc-live">
-                <span className="dot" /> Protected line stayed online
-              </span>
-            </div>
-            <div className="rc-hero">
-              <b>0</b>
-              <span>
-                hours of downtime on the line
-                <br />
-                protected by BlastShield™
-              </span>
-            </div>
-
-            <div className="rc-compare">
-              <div>
-                <div className="rc-row">
-                  <span>Protected line</span>
-                  <b className="ok">Kept running</b>
-                </div>
-                <div className="bar">
-                  <i className="bar-ok" />
-                </div>
-              </div>
-              <div>
-                <div className="rc-row">
-                  <span>Rest of the plant</span>
-                  <b className="bad">Offline 2+ days</b>
-                </div>
-                <div className="bar">
-                  <i className="bar-bad" />
-                </div>
-              </div>
-            </div>
-
-            <div className="rc-foot">
-              <div className="rc-cost">
-                <b>US$4.8M</b>
-                <span>revenue lost in unprotected areas</span>
-              </div>
-              <div className="rc-outcome">
-                <CircleCheck size={20} strokeWidth={1.75} />
-                <span>Management then extended BlastShield™ across the whole network.</span>
-              </div>
-            </div>
-            <figcaption>
-              Source:{' '}
-              <a href={featured.href} target="_blank" rel="noopener noreferrer">
-                BlastWave manufacturing case study <External />
-              </a>
-            </figcaption>
-          </figure>
+      {/* Services grid, as on the original home page */}
+      <section className="k-services">
+        <div className="wrap">
+          <div className="svc-grid">
+            {services.map((s) => (
+              <Link key={s.title} to={s.to} className="svc">
+                <h3>{s.title}</h3>
+                <p>{s.body}</p>
+                <span className="more-link">
+                  Learn more <Arrow />
+                </span>
+              </Link>
+            ))}
+          </div>
         </div>
       </section>
 
-      {/* 5 · Quote on white */}
-      <section className="quote-section">
+      {/* Benefits row with line icons */}
+      <section className="k-benefits">
         <div className="wrap">
-          <figure className="pull-quote">
-            <blockquote>“{testimonials[0].quote}”</blockquote>
-            <figcaption>
-              <b>{testimonials[0].big}</b> · {testimonials[0].bigSub}
-              <span>
-                {testimonials[0].who} · {testimonials[0].source}
-              </span>
-            </figcaption>
-          </figure>
+          <Title text="Must-Know OT Security {Benefits}" />
+          <div className="ben-grid">
+            {benefits.map((b) => (
+              <div key={b.title} className="ben">
+                <div className="ben-head">
+                  <b.icon size={40} strokeWidth={1.25} />
+                  <h3>{b.title}</h3>
+                </div>
+                <p>{b.body}</p>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
-      {/* 6 · Find your sector */}
-      <section className="light">
+      {/* Approach block (image left, text right), mirroring "Our Approach to Essential Eight Assessment" */}
+      <section className="k-approach">
+        <div className="wrap approach-grid">
+          <PurdueDiagram />
+          <div>
+            <Title text="Our Approach to {IEC 62443 and SOCI} Assessment" />
+            <p>
+              We map your real architecture into zones and conduits, assess each against IEC 62443 and your SOCI
+              obligations, and deliver a prioritised roadmap that engineering can implement and your board can attest to.
+            </p>
+            <ol className="k-steps">
+              <li>
+                <b>Assess.</b> Asset visibility, risk and maturity against AESCSF, IEC 62443 or NIST CSF.
+              </li>
+              <li>
+                <b>Protect.</b> Close the highest-risk gaps first, with BlastShield™ and practical controls.
+              </li>
+              <li>
+                <b>Prove.</b> Map every control to your CIRMP, ready for annual attestation and audit.
+              </li>
+            </ol>
+            <Link to="/consulting" className="btn">
+              Our consulting services
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Proof */}
+      <section className="k-proof">
         <div className="wrap">
-          <div className="section-head">
-            <div>
-              <div className="mono eyebrow">Sectors</div>
-              <h2>Built for the sectors SOCI protects</h2>
-            </div>
-            <Link to="/sectors" className="text-link">
+          <Title text="Proven in the {Field}" />
+          <p className="sub">{featured.title}. BlastWave case study, manufacturing.</p>
+          <div className="proof-grid">
+            {metrics.map((m) => (
+              <div key={m.k} className="proof-stat">
+                <b>{m.v}</b>
+                <span>{m.k}</span>
+              </div>
+            ))}
+          </div>
+          <blockquote className="k-quote">
+            “{testimonials[0].quote}”<cite>{testimonials[0].who}</cite>
+          </blockquote>
+          <div className="trusted">
+            <span>BlastShield™ is trusted by</span>
+            {partner.customers.slice(0, 5).map((c) => (
+              <b key={c}>{c}</b>
+            ))}
+          </div>
+          <p className="center-links">
+            <Link to="/case-studies" className="more-link">
+              Read all four case studies <Arrow />
+            </Link>
+            <a href={featured.href} target="_blank" rel="noopener noreferrer" className="more-link">
+              Original case study (PDF) <External />
+            </a>
+          </p>
+        </div>
+      </section>
+
+      {/* Specialist areas, like the original four image cards */}
+      <section className="k-specialist">
+        <div className="wrap">
+          <Title text="Critical Infrastructure {Sectors}" />
+          <div className="spec-grid">
+            {sectors.slice(0, 4).map((s) => (
+              <Link key={s.slug} to={`/sectors/${s.slug}`} className="spec">
+                <Photo name={s.photo} alt="" width={280} ratio={16 / 10} sizes="(max-width: 760px) 100vw, 280px" />
+                <h3>{s.name}</h3>
+                <p>{s.summary}</p>
+              </Link>
+            ))}
+          </div>
+          <p className="center-links">
+            <Link to="/sectors" className="more-link">
               All sectors <Arrow />
             </Link>
-          </div>
-          <div className="tiles">
-            {sectors.map((s) => (
-              <Link key={s.slug} to={`/sectors/${s.slug}`} className="tile">
-                <Photo name={s.photo} alt="" width={280} ratio={4 / 3} sizes="(max-width: 760px) 100vw, (max-width: 980px) 50vw, 280px" />
-                <div>
-                  <b>{s.name}</b>
-                  <span>{s.summary}</span>
-                  <ArrowCircle sm />
-                </div>
-              </Link>
-            ))}
-          </div>
+          </p>
         </div>
       </section>
 
-      {/* 7 · Who does the work, over a site photo */}
-      <section className="expertise-band on-image">
-        <Backdrop name="engineers" tone="left" />
-        <div className="wrap">
-          <div className="panel">
-            <div className="mono eyebrow">Our expertise</div>
-            <h2>18+ years in safety-critical OT</h2>
-            <p className="lead">
-              Our practitioners have secured rail signalling, traction power, tunnels, SCADA and building systems on
-              major Australian transport programs.
-            </p>
-            <ul className="checks">
-              <li>ISA/IEC 62443 Approved Instructor</li>
-              <li>ISO/IEC 27001 Lead Auditor</li>
-              <li>AESCSF assessments for power, gas and renewables</li>
-            </ul>
-            <Link to="/expertise" className="btn btn-ghost">
-              See our expertise <Arrow />
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      <CtaBand />
+      <Faq />
+      <Contact />
     </>
   )
 }

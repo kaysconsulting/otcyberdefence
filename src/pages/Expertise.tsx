@@ -10,7 +10,7 @@ export default function Expertise() {
       <PageHero
         photo="engineers"
         eyebrow="Our expertise"
-        title="Practitioners who have secured Australia's safety-critical infrastructure"
+        title="Practitioners Who Have Secured Australia's {Safety-Critical} Infrastructure"
         lead={expertise.intro}
         crumbs={[{ to: '/expertise', label: 'Expertise' }]}
       />

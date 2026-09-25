@@ -1,5 +1,6 @@
 import { consultingServices, frameworks, serviceDetail, approachSteps } from '../content.ts'
 import PageHero from '../components/PageHero.tsx'
+import Title from '../components/Title.tsx'
 import Icon from '../components/Icon.tsx'
 import More, { Evidence } from '../components/More.tsx'
 import SociTimeline from '../components/SociTimeline.tsx'
@@ -12,7 +13,7 @@ export default function Consulting() {
       <PageHero
         photo="advisory"
         eyebrow="01 · OT Cyber Consulting"
-        title="Governance, risk and compliance, built for operational technology"
+        title="Governance, Risk and {Compliance} Built for Operational Technology"
         lead="Most compliance programs are designed for IT and then stretched to fit the plant floor. Ours start with the plant."
         crumbs={[{ to: '/consulting', label: 'Consulting' }]}
       />
@@ -20,7 +21,7 @@ export default function Consulting() {
       <section className="light">
         <div className="wrap">
           <div className="mono eyebrow">Services</div>
-          <h2>Six services, each with defined outputs</h2>
+          <Title text="Six Services, Each with {Defined Outputs}" />
           <p className="lead">Open any service to see exactly what you receive and the standards it references.</p>
           <div className="cards3">
             {consultingServices.map((s) => {
@@ -57,7 +58,7 @@ export default function Consulting() {
       <section>
         <div className="wrap">
           <div className="mono eyebrow">Why it matters now</div>
-          <h2>SOCI has moved from awareness to accountability</h2>
+          <Title text="SOCI Has Moved from Awareness to {Accountability}" />
           <p className="lead">
             Responsible entities must keep a Critical Infrastructure Risk Management Program aligned to a recognised
             framework, and their boards attest to it every year.
@@ -79,7 +80,7 @@ export default function Consulting() {
         <div className="wrap split">
           <div>
             <div className="mono eyebrow">How we assess</div>
-            <h2>We start with the plant, not the policy</h2>
+            <Title text="We Start with the {Plant}, Not the Policy" />
             <p className="lead">
               Every assessment maps your real architecture into zones and conduits, so risk, controls and investment
               line up with how the plant actually runs.
@@ -99,7 +100,7 @@ export default function Consulting() {
         </div>
       </section>
 
-      <CtaBand title="Need a SOCI or AESCSF roadmap?" />
+      <CtaBand title="Need a {SOCI or AESCSF} Roadmap?" />
     </>
   )
 }
