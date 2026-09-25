@@ -345,3 +345,8 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid var
   .work-together form{padding:22px}
   .ph-chev,.k-hero-chev-top{display:none}
 }
+
+/* Official logo */
+.logo img{height:92px;width:auto;display:block}
+footer .logo img{height:80px}
+@media (max-width:760px){ .logo img{height:62px} }
