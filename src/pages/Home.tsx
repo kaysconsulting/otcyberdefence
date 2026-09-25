@@ -66,9 +66,6 @@ export default function Home() {
                 See the evidence
               </Link>
             </div>
-            <p className="partner-line">
-              Official Australian partner of <b>BlastWave</b> · BlastShield™ patented zero trust OT platform
-            </p>
           </div>
         </div>
         <Chevrons className="k-hero-chev-bottom" />

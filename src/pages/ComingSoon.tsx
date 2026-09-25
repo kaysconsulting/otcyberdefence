@@ -22,9 +22,6 @@ export default function ComingSoon() {
           <li>IEC 62443</li>
           <li>OT Protection</li>
         </ul>
-        <p className="partner-line">
-          Official Australian partner of <b>BlastWave</b> · BlastShield™ patented zero trust OT platform
-        </p>
         <div className="soon-contact">
           {company.email && (
             <a href={`mailto:${company.email}`}>
