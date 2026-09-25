@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OT Cyber Defence | OT Cybersecurity for Australian Critical Infrastructure</title>
+<meta name="description" content="OT Cyber Defence helps Australian critical infrastructure operators meet SOCI obligations and protect ICS/SCADA environments with a field-proven zero trust OT security platform.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0A1220; --bg2:#0F1A2C; --panel:#13213A; --line:#223452;
+  --text:#E8EEF7; --muted:#9AAAC2; --amber:#F5A524; --teal:#2EC4B6; --white:#fff;
+  --light:#F4F6FA; --ink:#0F1A2C; --inkmuted:#4A5870;
+  --r:14px; --max:1180px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+.wrap{max-width:var(--max);margin:0 auto;padding:0 24px}
+.mono{font-family:"JetBrains Mono",monospace;font-size:.78rem;letter-spacing:.12em;text-transform:uppercase}
+.eyebrow{color:var(--amber);margin-bottom:14px;display:inline-flex;align-items:center;gap:10px}
+.eyebrow::before{content:"";width:22px;height:2px;background:var(--amber)}
+h1,h2,h3{line-height:1.15;letter-spacing:-.02em}
+h2{font-size:clamp(1.8rem,3.4vw,2.7rem);font-weight:800;margin-bottom:16px}
+h3{font-size:1.15rem;font-weight:700;margin-bottom:8px}
+p.lead{font-size:1.1rem;color:var(--muted);max-width:720px}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:14px 22px;border-radius:10px;font-weight:600;font-size:.95rem;transition:.2s}
+.btn-primary{background:var(--amber);color:#1a1200}
+.btn-primary:hover{background:#ffb938}
+.btn-ghost{border:1px solid var(--line);color:var(--text)}
+.btn-ghost:hover{border-color:var(--teal);color:var(--teal)}
+section{padding:96px 0}
+
+/* NAV */
+header{position:sticky;top:0;z-index:50;background:rgba(10,18,32,.88);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.nav{display:flex;align-items:center;justify-content:space-between;height:72px}
+.logo{display:flex;align-items:center;gap:10px;font-weight:800;font-size:1.05rem;letter-spacing:-.01em}
+.logo svg{flex:none}
+.logo small{display:block;font-weight:500;font-size:.68rem;color:var(--muted);letter-spacing:.14em;text-transform:uppercase}
+.nav ul{display:flex;gap:30px;list-style:none;font-size:.92rem;color:var(--muted)}
+.nav ul a:hover{color:var(--text)}
+.nav .btn{padding:10px 16px}
+.burger{display:none;background:none;border:1px solid var(--line);color:var(--text);border-radius:8px;padding:8px 10px;cursor:pointer}
+
+/* HERO */
+.hero{position:relative;overflow:hidden;padding:110px 0 90px}
+.hero::before{content:"";position:absolute;inset:0;background:
+  radial-gradient(800px 400px at 85% 10%,rgba(46,196,182,.14),transparent 60%),
+  radial-gradient(700px 400px at 0% 100%,rgba(245,165,36,.10),transparent 60%);}
+.grid-bg{position:absolute;inset:0;background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:56px 56px;opacity:.25;mask-image:linear-gradient(180deg,#000,transparent 85%)}
+.hero .wrap{position:relative;display:grid;grid-template-columns:1.15fr .85fr;gap:56px;align-items:center}
+.hero h1{font-size:clamp(2.3rem,5vw,3.9rem);font-weight:800;margin-bottom:22px}
+.hero h1 span{color:var(--teal)}
+.hero .lead{margin-bottom:34px}
+.cta-row{display:flex;gap:14px;flex-wrap:wrap}
+.pillars{display:grid;gap:16px}
+.pill{background:linear-gradient(180deg,var(--panel),var(--bg2));border:1px solid var(--line);border-radius:var(--r);padding:24px;display:flex;gap:18px;align-items:flex-start;transition:.2s}
+.pill:hover{border-color:var(--teal);transform:translateY(-2px)}
+.pill .num{font-family:"JetBrains Mono",monospace;color:var(--amber);font-size:.8rem;padding-top:4px}
+.pill p{color:var(--muted);font-size:.93rem}
+.pill .go{margin-top:10px;color:var(--teal);font-size:.88rem;font-weight:600}
+
+/* STATS */
+.stats{background:var(--bg2);border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:46px 0}
+.stats .wrap{display:grid;grid-template-columns:repeat(4,1fr);gap:24px}
+.stat b{display:block;font-size:clamp(1.9rem,3.4vw,2.7rem);font-weight:800;color:var(--white);letter-spacing:-.02em}
+.stat b sup{font-size:.9rem;color:var(--amber)}
+.stat span{color:var(--muted);font-size:.9rem}
+
+/* LIGHT SECTION */
+.light{background:var(--light);color:var(--ink)}
+.light p.lead,.light .muted{color:var(--inkmuted)}
+.light .card{background:#fff;border:1px solid #E1E6EF}
+.card{border-radius:var(--r);padding:28px;border:1px solid var(--line);background:var(--panel)}
+.card p{font-size:.94rem;color:var(--muted)}
+.light .card p{color:var(--inkmuted)}
+.ico{width:44px;height:44px;border-radius:10px;display:grid;place-items:center;margin-bottom:18px;background:rgba(46,196,182,.12);color:var(--teal)}
+.light .ico{background:#E6F7F5;color:#138A80}
+.cards3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:48px}
+.cards2{display:grid;grid-template-columns:repeat(2,1fr);gap:20px;margin-top:48px}
+.cards4{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;margin-top:48px}
+.card ul{list-style:none;margin-top:14px;font-size:.9rem}
+.card li{padding:6px 0 6px 20px;position:relative;color:var(--inkmuted)}
+.card li::before{content:"";position:absolute;left:0;top:14px;width:8px;height:2px;background:var(--amber)}
+.tag{display:inline-block;font-family:"JetBrains Mono",monospace;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;padding:5px 10px;border-radius:999px;background:rgba(245,165,36,.14);color:#B46F00;margin-bottom:14px}
+
+/* SOCI BAND */
+.soci{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start;margin-top:64px;padding:40px;border-radius:18px;background:var(--ink);color:var(--text)}
+.soci p{color:var(--muted)}
+.obl{display:grid;gap:12px}
+.obl div{display:flex;gap:14px;padding:14px 16px;border:1px solid var(--line);border-radius:10px;background:var(--panel)}
+.obl b{color:var(--amber);font-family:"JetBrains Mono",monospace;font-size:.8rem;min-width:26px}
+.obl span{font-size:.92rem}
+
+/* FRAMEWORKS */
+.fw{display:flex;flex-wrap:wrap;gap:12px;margin-top:28px}
+.fw span{padding:10px 16px;border-radius:10px;border:1px solid #D5DCE8;background:#fff;font-weight:600;font-size:.9rem}
+
+/* LIFECYCLE */
+.life{display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin-top:48px;border:1px solid #E1E6EF;border-radius:var(--r);overflow:hidden;background:#fff}
+.life div{padding:26px;border-right:1px solid #E1E6EF}
+.life div:last-child{border-right:none}
+.life .mono{color:#138A80;margin-bottom:10px;display:block}
+.life p{font-size:.9rem;color:var(--inkmuted)}
+
+/* PROTECTION */
+.how{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center;margin-top:56px}
+.diagram{background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:22px}
+.diagram svg{width:100%;height:auto;display:block}
+.feat{display:grid;gap:16px}
+.feat .row{display:flex;gap:16px;padding:18px;border-radius:12px;border:1px solid var(--line);background:var(--panel)}
+.feat .row p{font-size:.92rem;color:var(--muted)}
+.feat .ico{margin:0;flex:none}
+
+.proof{margin-top:80px}
+.case{display:flex;flex-direction:column}
+.case .res{margin-top:auto;padding-top:18px;border-top:1px solid var(--line);margin-top:18px;font-size:.88rem;color:var(--teal);font-weight:600}
+.quote{margin-top:28px;padding:32px;border-radius:var(--r);border-left:4px solid var(--amber);background:var(--panel);display:grid;grid-template-columns:1fr auto;gap:24px;align-items:center}
+.quote q{font-size:1.25rem;font-weight:600;line-height:1.45}
+.quote small{display:block;color:var(--muted);margin-top:10px;font-size:.85rem}
+.quote .big{font-size:2.6rem;font-weight:800;color:var(--teal);text-align:right;line-height:1}
+.quote .big span{display:block;font-size:.8rem;color:var(--muted);font-weight:500;margin-top:6px}
+
+/* TOGETHER */
+.together{display:grid;grid-template-columns:repeat(3,1fr);gap:0;margin-top:48px;position:relative}
+.step{padding:30px;border:1px solid var(--line);background:var(--panel)}
+.step:first-child{border-radius:var(--r) 0 0 var(--r)}
+.step:last-child{border-radius:0 var(--r) var(--r) 0}
+.step .mono{color:var(--amber);display:block;margin-bottom:10px}
+.step p{color:var(--muted);font-size:.93rem}
+
+/* INDUSTRIES */
+.inds{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:40px}
+.ind{padding:22px;border-radius:12px;background:#fff;border:1px solid #E1E6EF;font-weight:600}
+.ind small{display:block;font-weight:400;color:var(--inkmuted);font-size:.85rem;margin-top:4px}
+
+/* CTA / CONTACT */
+.cta{background:linear-gradient(135deg,#10233F,#0A1220);border-top:1px solid var(--line)}
+.cta .wrap{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:start}
+form{min-width:0;display:grid;gap:14px;background:var(--panel);padding:28px;border-radius:var(--r);border:1px solid var(--line)}
+label{font-size:.82rem;color:var(--muted);display:grid;gap:6px}
+input,select,textarea{width:100%;min-width:0;font:inherit;background:var(--bg);border:1px solid var(--line);color:var(--text);border-radius:8px;padding:12px}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--teal);border-color:transparent}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.contact-list{margin-top:28px;display:grid;gap:12px;color:var(--muted);font-size:.95rem}
+.contact-list b{color:var(--text);font-weight:600}
+.ph{background:rgba(245,165,36,.15);color:var(--amber);padding:1px 6px;border-radius:4px;font-size:.85em}
+
+footer{padding:40px 0;border-top:1px solid var(--line);font-size:.82rem;color:var(--muted)}
+footer .wrap{display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap}
+.fine{max-width:760px;font-size:.76rem;opacity:.8;margin-top:10px}
+
+.wrap>*,.two>*{min-width:0}
+#protection .tag{color:var(--amber);background:rgba(245,165,36,.12)}
+/* RESPONSIVE */
+@media (max-width:980px){
+  .hero .wrap,.how,.cta .wrap,.soci{grid-template-columns:1fr}
+  .cards3,.cards4,.inds{grid-template-columns:repeat(2,1fr)}
+  .life,.together{grid-template-columns:1fr 1fr}
+  .life div{border-bottom:1px solid #E1E6EF}
+  .step,.step:first-child,.step:last-child{border-radius:0}
+  .stats .wrap{grid-template-columns:repeat(2,1fr)}
+}
+@media (max-width:760px){
+  section{padding:68px 0}
+  .wrap{padding:0 16px}
+  .nav ul,.nav .btn{display:none}
+  .burger{display:block}
+  .nav.open ul{display:flex;flex-direction:column;position:absolute;top:72px;left:0;right:0;background:var(--bg);padding:20px 16px;border-bottom:1px solid var(--line);gap:16px}
+  .cards3,.cards4,.cards2,.inds,.life,.together,.two{grid-template-columns:1fr}
+  .quote{grid-template-columns:1fr}.quote .big{text-align:left}
+  .soci{padding:24px}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap nav" id="nav">
+    <a href="#top" class="logo">
+      <svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true"><path d="M17 2 30 7v9c0 8-5.6 13.6-13 16C9.6 29.6 4 24 4 16V7z" fill="none" stroke="#2EC4B6" stroke-width="2.2"/><path d="M11 17h4l2-5 3 10 2-5h2" fill="none" stroke="#F5A524" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span>OT Cyber Defence<small>Critical Infrastructure Security</small></span>
+    </a>
+    <ul>
+      <li><a href="#consulting">Consulting</a></li>
+      <li><a href="#protection">OT Cyber Protection</a></li>
+      <li><a href="#approach">Approach</a></li>
+      <li><a href="#industries">Industries</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+    <a href="#contact" class="btn btn-primary">Talk to an expert →</a>
+    <button class="burger" aria-label="Menu" onclick="document.getElementById('nav').classList.toggle('open')">☰</button>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero" id="top">
+  <div class="grid-bg"></div>
+  <div class="wrap">
+    <div>
+      <div class="mono eyebrow">Australian OT cybersecurity</div>
+      <h1>Compliance you can prove. <span>Protection that's already proven.</span></h1>
+      <p class="lead">OT Cyber Defence helps Australia's energy, water, transport and industrial operators meet their SOCI obligations and secure the ICS and SCADA systems that keep the country running. We pair deep GRC expertise with a field-proven zero trust OT platform already protecting over 5,000 industrial sites across 22 countries.</p>
+      <div class="cta-row">
+        <a href="#contact" class="btn btn-primary">Talk to an expert →</a>
+        <a href="#consulting" class="btn btn-ghost">Explore our services</a>
+      </div>
+    </div>
+    <div class="pillars">
+      <a href="#consulting" class="pill">
+        <span class="num">01</span>
+        <div><h3>OT Cyber Consulting</h3><p>SOCI, AESCSF, IEC 62443 and NIST CSF. Risk, governance and compliance delivered by people who understand operational technology.</p><div class="go">Governance, risk &amp; compliance →</div></div>
+      </a>
+      <a href="#protection" class="pill">
+        <span class="num">02</span>
+        <div><h3>OT Cyber Protection</h3><p>Make critical assets invisible to attackers. Passwordless access, microsegmentation and protection for legacy systems, with no downtime.</p><div class="go">Field-proven technology →</div></div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats">
+  <div class="wrap">
+    <div class="stat"><b>5,000+<sup>*</sup></b><span>ICS/OT sites protected worldwide</span></div>
+    <div class="stat"><b>22<sup>*</sup></b><span>Countries with live deployments</span></div>
+    <div class="stat"><b>500M+</b><span>Device hours of attack prevention</span></div>
+    <div class="stat"><b>100%</b><span>OT focused. Standards-led. Australian based.</span></div>
+  </div>
+</div>
+
+<!-- CONSULTING -->
+<section class="light" id="consulting">
+  <div class="wrap">
+    <div class="mono eyebrow">01 · OT Cyber Consulting</div>
+    <h2>Governance, risk and compliance, built for operational technology</h2>
+    <p class="lead">Most compliance programs are designed for IT and then stretched to fit the plant floor. Ours start with the plant. We turn regulatory obligations into practical, engineering-aware programs that boards can sign off and operators can live with.</p>
+
+    <div class="cards3">
+      <div class="card">
+        <div class="ico"><svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 2 19 5v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V5z"/><path d="m7.5 11 2.5 2.5L15 8.5"/></svg></div>
+        <span class="tag">SOCI Act</span>
+        <h3>Critical infrastructure compliance</h3>
+        <p>End-to-end support for obligations under the Security of Critical Infrastructure Act 2018.</p>
+        <ul><li>CIRMP development and uplift</li><li>Annual board-approved reporting</li><li>Cyber incident reporting readiness</li><li>Register of Critical Infrastructure Assets</li></ul>
+      </div>
+      <div class="card">
+        <div class="ico"><svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="16" height="16" rx="2"/><path d="M7 14V10M11 14V7M15 14v-2"/></svg></div>
+        <span class="tag">Assessment</span>
+        <h3>Framework maturity assessments</h3>
+        <p>Independent, evidence-based assessment against the framework that fits your sector and regulator.</p>
+        <ul><li>AESCSF maturity assessments</li><li>IEC 62443 zone and conduit reviews</li><li>NIST CSF 2.0 gap analysis</li><li>Target-state roadmaps</li></ul>
+      </div>
+      <div class="card">
+        <div class="ico"><svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M11 7v4l3 2"/></svg></div>
+        <span class="tag">Risk</span>
+        <h3>OT risk management</h3>
+        <p>Cyber risk expressed in operational terms: safety, availability and production, not just data.</p>
+        <ul><li>OT cyber risk assessments</li><li>Asset visibility and criticality</li><li>Third-party and supply chain risk</li><li>Risk registers and treatment plans</li></ul>
+      </div>
+      <div class="card">
+        <div class="ico"><svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 18h16M5 18V9M9 18V5M13 18v-7M17 18V8"/></svg></div>
+        <span class="tag">Architecture</span>
+        <h3>ICS &amp; SCADA segmentation design</h3>
+        <p>Purdue-model reference architectures, zones and conduits, and secure remote access designs.</p>
+      </div>
+      <div class="card">
+        <div class="ico"><svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h14v10H9l-5 4z"/></svg></div>
+        <span class="tag">Strategy</span>
+        <h3>OT cyber strategy &amp; board advisory</h3>
+        <p>Executive briefings, investment prioritisation and multi-year programs that tie spend to risk reduction.</p>
+      </div>
+      <div class="card">
+        <div class="ico"><svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 2v4M11 16v4M2 11h4M16 11h4"/><circle cx="11" cy="11" r="5"/></svg></div>
+        <span class="tag">Resilience</span>
+        <h3>Incident response readiness</h3>
+        <p>OT-specific response plans, playbooks and tabletop exercises aligned to SOCI reporting timeframes.</p>
+      </div>
+    </div>
+
+    <div class="soci">
+      <div>
+        <div class="mono eyebrow">Why it matters now</div>
+        <h2 style="font-size:clamp(1.5rem,2.6vw,2rem)">SOCI has moved from awareness to accountability</h2>
+        <p>Responsible entities must maintain a Critical Infrastructure Risk Management Program that covers cyber and information security hazards, aligned to a recognised framework such as AESCSF, NIST CSF, ISO/IEC 27001 or the Essential Eight. Boards now attest to it every year. We help you get there, and stay there.</p>
+      </div>
+      <div class="obl">
+        <div><b>01</b><span>Register critical infrastructure assets and keep ownership and operational information current</span></div>
+        <div><b>02</b><span>Report significant cyber incidents to the ACSC within tight statutory timeframes</span></div>
+        <div><b>03</b><span>Adopt, maintain and comply with a written CIRMP, including a recognised cyber framework</span></div>
+        <div><b>04</b><span>Submit an annual CIRMP report approved by the board or governing body</span></div>
+      </div>
+    </div>
+
+    <div style="margin-top:56px">
+      <div class="mono eyebrow">Frameworks we work with every day</div>
+      <div class="fw"><span>SOCI Act 2018</span><span>AESCSF</span><span>IEC 62443</span><span>NIST CSF 2.0</span><span>ISO/IEC 27001</span><span>Essential Eight</span><span>C2M2</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- PROTECTION -->
+<section id="protection">
+  <div class="wrap">
+    <div class="mono eyebrow">02 · OT Cyber Protection</div>
+    <h2>Tried, tested and already protecting critical infrastructure worldwide</h2>
+    <p class="lead">We bring Australian operators a zero trust OT security platform that is already deployed at more than 5,000 ICS/OT sites across 22 countries, from water districts and energy producers to manufacturers, ports and government facilities. It is purpose-built for industrial environments, protects legacy systems that cannot be patched, and deploys without re-architecting your network or stopping production.</p>
+
+    <div class="how">
+      <div class="diagram" aria-label="Diagram: attackers cannot see cloaked OT assets; authorised users connect through passwordless MFA to microsegmented zones">
+        <svg viewBox="0 0 520 380" font-family="Inter,sans-serif">
+          <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 10 5 0 10z" fill="#2EC4B6"/></marker></defs>
+          <!-- attacker -->
+          <rect x="18" y="40" width="120" height="54" rx="10" fill="#1B2438" stroke="#E5484D"/>
+          <text x="78" y="64" fill="#E8EEF7" font-size="13" font-weight="700" text-anchor="middle">Attacker</text>
+          <text x="78" y="81" fill="#9AAAC2" font-size="11" text-anchor="middle">scans, stolen creds</text>
+          <path d="M138 67h92" stroke="#E5484D" stroke-width="2" stroke-dasharray="5 5"/>
+          <text x="184" y="58" fill="#E5484D" font-size="11" text-anchor="middle">nothing to see</text>
+          <!-- user -->
+          <rect x="18" y="262" width="120" height="54" rx="10" fill="#1B2438" stroke="#2EC4B6"/>
+          <text x="78" y="286" fill="#E8EEF7" font-size="13" font-weight="700" text-anchor="middle">Engineer</text>
+          <text x="78" y="303" fill="#9AAAC2" font-size="11" text-anchor="middle">passwordless MFA</text>
+          <path d="M138 289h84" stroke="#2EC4B6" stroke-width="2" marker-end="url(#a)"/>
+          <!-- shield -->
+          <rect x="230" y="20" width="272" height="340" rx="16" fill="#0F1A2C" stroke="#2EC4B6" stroke-dasharray="6 6"/>
+          <text x="366" y="46" fill="#2EC4B6" font-size="11" font-weight="700" text-anchor="middle" letter-spacing="1.5">CLOAKED OT NETWORK</text>
+          <g font-size="12" fill="#E8EEF7" text-anchor="middle">
+            <rect x="252" y="70" width="108" height="76" rx="10" fill="#13213A" stroke="#223452"/><text x="306" y="104" font-weight="700">HMI</text><text x="306" y="122" fill="#9AAAC2" font-size="10">Segment A</text>
+            <rect x="374" y="70" width="108" height="76" rx="10" fill="#13213A" stroke="#223452"/><text x="428" y="104" font-weight="700">PLC</text><text x="428" y="122" fill="#9AAAC2" font-size="10">Segment B</text>
+            <rect x="252" y="160" width="108" height="76" rx="10" fill="#13213A" stroke="#223452"/><text x="306" y="194" font-weight="700">RTU</text><text x="306" y="212" fill="#9AAAC2" font-size="10">Segment C</text>
+            <rect x="374" y="160" width="108" height="76" rx="10" fill="#13213A" stroke="#F5A524"/><text x="428" y="194" font-weight="700">Legacy SCADA</text><text x="428" y="212" fill="#F5A524" font-size="10">virtual air-gap</text>
+            <rect x="252" y="262" width="230" height="54" rx="10" fill="#10302F" stroke="#2EC4B6"/><text x="367" y="286" font-weight="700">Security Gateway</text><text x="367" y="303" fill="#9AAAC2" font-size="10">identity-based policy, per-device segments</text>
+          </g>
+        </svg>
+      </div>
+      <div class="feat">
+        <div class="row"><div class="ico"><svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 11s3.5-6 9-6 9 6 9 6-3.5 6-9 6-9-6-9-6z"/><path d="M3 3l16 16"/></svg></div><div><h3>Network cloaking</h3><p>HMIs, PLCs and RTUs become invisible to scanners and attackers, stopping reconnaissance, the first step in every OT attack chain.</p></div></div>
+        <div class="row"><div class="ico"><svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="10" width="12" height="9" rx="2"/><path d="M8 10V7a3 3 0 0 1 6 0v3"/></svg></div><div><h3>Passwordless MFA</h3><p>Identity-based access with biometric authentication removes stolen and shared passwords from the equation.</p></div></div>
+        <div class="row"><div class="ico"><svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="12" y="3" width="7" height="7"/><rect x="3" y="12" width="7" height="7"/><rect x="12" y="12" width="7" height="7"/></svg></div><div><h3>Microsegmentation</h3><p>Software-defined segments contain any breach and stop lateral movement, without complex firewall rule sets.</p></div></div>
+        <div class="row"><div class="ico"><svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 11h14M11 4v14"/><circle cx="11" cy="11" r="8"/></svg></div><div><h3>Secure remote access</h3><p>Replace legacy VPNs and jump boxes with zero trust access and recorded sessions for vendors and engineers.</p></div></div>
+      </div>
+    </div>
+
+    <div class="proof">
+      <div class="mono eyebrow">Proven in the field</div>
+      <h2 style="font-size:clamp(1.5rem,2.6vw,2.1rem)">Outcomes from real-world deployments</h2>
+      <p class="lead">The platform we deploy has been tested in some of the world's most demanding operational environments. A selection of published case studies:</p>
+      <div class="cards4">
+        <div class="card case"><span class="tag">Oil &amp; Gas</span><h3>Secure connectivity across remote assets</h3><p>Secured operational technology connectivity for distributed oil and gas sites without exposing field equipment to the internet.</p><div class="res">Remote assets cloaked and connected</div></div>
+        <div class="card case"><span class="tag">Manufacturing</span><h3>Zero trust protection for a production plant</h3><p>Zero trust protection deployed on a live manufacturing plant, containing a threat that could otherwise have halted production.</p><div class="res">Catastrophic downtime avoided</div></div>
+        <div class="card case"><span class="tag">Technology</span><h3>Legacy VPN replaced with zero trust access</h3><p>An AI infrastructure company replaced its legacy VPN with zero trust network access across its environment.</p><div class="res">Zero trust access live in about 10 minutes</div></div>
+        <div class="card case"><span class="tag">Critical infrastructure</span><h3>Resilience against disasters</h3><p>Critical assets protected so operations can continue and recover when physical or cyber disasters strike.</p><div class="res">Protected, recoverable operations</div></div>
+      </div>
+      <div class="quote">
+        <div><q>I couldn't believe how easy it was to install. We configured 97 devices into 95 individual segments in four hours.</q><small>Platform customer, published testimonial</small></div>
+        <div class="big">4 hrs<span>97 devices · 95 segments</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- APPROACH -->
+<section id="approach" style="background:var(--bg2);border-top:1px solid var(--line)">
+  <div class="wrap">
+    <div class="mono eyebrow">Consulting + Protection</div>
+    <h2>From obligation to protection, with one partner</h2>
+    <p class="lead">Advice without implementation leaves gaps. Technology without governance leaves you unable to prove it works. We connect both.</p>
+    <div class="together">
+      <div class="step"><span class="mono">Step 1 · Assess</span><h3>Know where you stand</h3><p>Map your assets and SOCI obligations, and baseline maturity against AESCSF, IEC 62443 or NIST CSF.</p></div>
+      <div class="step"><span class="mono">Step 2 · Protect</span><h3>Close the highest-risk gaps fast</h3><p>Deploy cloaking, passwordless access and segmentation, prioritised by the risk assessment, with no downtime.</p></div>
+      <div class="step"><span class="mono">Step 3 · Prove</span><h3>Evidence for the board and regulator</h3><p>Map every control back to your CIRMP and framework, ready for annual attestation and audit.</p></div>
+    </div>
+    <div class="life" style="background:var(--panel);border-color:var(--line)">
+      <div style="border-color:var(--line)"><span class="mono" style="color:var(--teal)">Assess</span><p style="color:var(--muted)">Risk, maturity and asset visibility</p></div>
+      <div style="border-color:var(--line)"><span class="mono" style="color:var(--teal)">Design</span><p style="color:var(--muted)">Zones, conduits and target architecture</p></div>
+      <div style="border-color:var(--line)"><span class="mono" style="color:var(--teal)">Implement</span><p style="color:var(--muted)">Controls deployed without disrupting operations</p></div>
+      <div style="border-color:var(--line)"><span class="mono" style="color:var(--teal)">Sustain</span><p style="color:var(--muted)">Monitoring, reporting and continuous uplift</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- INDUSTRIES -->
+<section class="light" id="industries">
+  <div class="wrap">
+    <div class="mono eyebrow">Industries</div>
+    <h2>Built for the sectors SOCI protects</h2>
+    <div class="inds">
+      <div class="ind">Energy &amp; Electricity<small>Generation, transmission, distribution, BESS</small></div>
+      <div class="ind">Water &amp; Wastewater<small>Treatment plants, pump stations, telemetry</small></div>
+      <div class="ind">Oil &amp; Gas<small>Upstream, pipelines, terminals</small></div>
+      <div class="ind">Transport &amp; Ports<small>Rail signalling, port operations</small></div>
+      <div class="ind">Manufacturing<small>Process and discrete production</small></div>
+      <div class="ind">Mining &amp; Resources<small>Remote and autonomous operations</small></div>
+      <div class="ind">Healthcare<small>Building and medical systems</small></div>
+      <div class="ind">Government &amp; Defence<small>Facilities and building management</small></div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="cta" id="contact">
+  <div class="wrap">
+    <div>
+      <div class="mono eyebrow">Start a conversation</div>
+      <h2>Ready to secure your operations?</h2>
+      <p class="lead">Whether you need a SOCI compliance roadmap or want to see zero trust OT protection in action, our team can help. Book a no-obligation discovery session or a live demonstration.</p>
+      <div class="contact-list">
+        <div><b>Office</b><br>Unit 217, 14 Lexington Drive, Bella Vista NSW 2153</div>
+        <div><b>Email</b><br><span class="ph">[email address]</span></div>
+        <div><b>Phone</b><br><span class="ph">[phone number]</span></div>
+      </div>
+    </div>
+    <form onsubmit="event.preventDefault();this.innerHTML='<h3>Thank you</h3><p style=&quot;color:var(--muted)&quot;>We will be in touch within one business day.</p>'">
+      <div class="two">
+        <label>Name<input required></label>
+        <label>Organisation<input required></label>
+      </div>
+      <div class="two">
+        <label>Email<input type="email" required></label>
+        <label>Phone<input type="tel"></label>
+      </div>
+      <label>I'm interested in
+        <select><option>SOCI / GRC consulting</option><option>Framework assessment (AESCSF, IEC 62443, NIST CSF)</option><option>OT Cyber Protection demo</option><option>Both consulting and protection</option></select>
+      </label>
+      <label>How can we help?<textarea rows="4"></textarea></label>
+      <button class="btn btn-primary" type="submit" style="border:0;cursor:pointer;justify-content:center">Talk to an expert →</button>
+    </form>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div>
+      <b style="color:var(--text)">OT Cyber Defence Pty Ltd</b> · ACN <span class="ph">[ACN]</span><br>
+      Bella Vista NSW, servicing critical infrastructure Australia-wide
+      <p class="fine">* Deployment figures (sites and countries), device-hour figures, case study outcomes and the customer testimonial relate to the zero trust OT platform deployed by OT Cyber Defence and are sourced from the platform vendor's published materials.</p>
+    </div>
+    <div>© 2026 OT Cyber Defence. All rights reserved.</div>
+  </div>
+</footer>
+</body>
+</html>
