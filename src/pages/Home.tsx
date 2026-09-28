@@ -1,195 +1,153 @@
 import { Link } from 'react-router-dom'
-import { EyeOff, Fingerprint, LayoutGrid, ScreenShare } from 'lucide-react'
-import { caseDetail, caseStudies, partner, sectors, testimonials } from '../content.ts'
-import Title from '../components/Title.tsx'
-import Chevrons from '../components/Chevrons.tsx'
-import Photo from '../components/Photo.tsx'
-import PurdueDiagram from '../components/PurdueDiagram.tsx'
-import Faq from '../components/Faq.tsx'
-import Contact from '../components/Contact.tsx'
-import { Arrow, External } from '../components/Icon.tsx'
-
-const services = [
-  {
-    to: '/consulting',
-    title: 'OT Cyber Consulting',
-    body: 'Expert guidance on SOCI, AESCSF and IEC 62443. We assess your OT security posture, find the gaps and build a practical, risk-based program your board can sign off.',
-  },
-  {
-    to: '/protection',
-    title: 'OT Cyber Protection',
-    body: 'As the official Australian partner of BlastWave, we deploy the patented BlastShield™ platform to hide critical assets from attackers, with no downtime.',
-  },
-  {
-    to: '/consulting',
-    title: 'Critical Infrastructure Compliance',
-    body: 'CIRMP development, annual board reporting and incident reporting readiness under the Security of Critical Infrastructure Act 2018.',
-  },
-  {
-    to: '/sectors',
-    title: 'Sector Specialists',
-    body: 'Rail and transport, aviation, energy, water, ports, mining and government: the sectors SOCI protects.',
-  },
-]
-
-const benefits = [
-  { icon: EyeOff, title: 'Network Cloaking', body: 'Make PLCs, RTUs and HMIs invisible to scanners and attackers.' },
-  { icon: Fingerprint, title: 'Passwordless MFA', body: 'Remove stolen and shared passwords from the equation.' },
-  { icon: LayoutGrid, title: 'Microsegmentation', body: 'Contain a breach and stop lateral movement across the plant.' },
-  { icon: ScreenShare, title: 'Secure Remote Access', body: 'Replace VPNs with recorded, zero trust access for vendors.' },
-]
-
-const featured = caseStudies[1]
-const metrics = caseDetail[featured.title].metrics
+import { FAQS, SECTORS } from '../data.ts'
+import { img, srcSet } from '../media.ts'
+import HeroVideo from '../components/HeroVideo.tsx'
+import SectorCard from '../components/SectorCard.tsx'
 
 export default function Home() {
   return (
     <>
-      {/* Hero: the Kays banner composition */}
-      <section className="k-hero">
-        <Chevrons dir="left" color="blue" className="k-hero-chev-top" />
-        <div className="k-hero-img">
-          <img src="/brand/hero-visual.png" alt="Phone showing a security shield and padlock" width={471} height={313} />
+      <section className="hero" style={{ padding: 0 }}>
+        <HeroVideo />
+        <div className="wrap">
+          <h1>
+            Your <span className="red">Trusted Partner</span> in OT Cybersecurity and Critical Infrastructure Compliance.
+          </h1>
+          <p>
+            Proven OT protection, now in Australia. Already securing more than 5,000 industrial sites across 22 countries,
+            and backed by specialists who know SOCI, AESCSF and IEC 62443.
+          </p>
+          <div className="ctas">
+            <Link to="/contact" className="btn btn-red">
+              Book an appointment
+            </Link>
+            <Link to="/case-studies" className="btn btn-line">
+              See the evidence
+            </Link>
+          </div>
         </div>
-        <div className="wrap k-hero-grid">
-          <div className="k-hero-copy">
-            <Title as="h1" text="Your {Trusted Partner} in OT Cybersecurity and Critical Infrastructure Compliance." />
+      </section>
+
+      <div className="stats">
+        <div className="wrap">
+          <div className="stat"><b>5,000<i>+</i></b><span>ICS/OT sites protected</span></div>
+          <div className="stat"><b>22</b><span>Countries with live deployments</span></div>
+          <div className="stat"><b>500M<i>+</i></b><span>Device hours of attack prevention</span></div>
+          <div className="stat"><b>0</b><span>Downtime to deploy</span></div>
+        </div>
+      </div>
+      <div className="stats-note">Global deployment figures for the zero trust OT platform we deliver with our US technology partner.</div>
+
+      <section>
+        <div className="wrap">
+          <div className="center">
+            <span className="eyebrow">What we do</span>
+            <h2>Two Ways We Secure Your Operations</h2>
             <p className="lead">
-              Tailored OT security consulting and field-proven protection for Australia's transport, energy, water and
-              government infrastructure.
+              Advice that gets your board to sign-off. Technology that stops attackers reaching your plant. Use either, or
+              bring them together.
             </p>
-            <div className="btn-row">
-              <Link to="/contact" className="btn">
-                Contact Us
-              </Link>
-              <Link to="/case-studies" className="btn btn-outline">
-                See the evidence
-              </Link>
+          </div>
+          <div className="duo">
+            <Link to="/consulting" className="svc svc-white">
+              <span className="num">01 · Consulting</span>
+              <h3>OT Cyber Consulting</h3>
+              <p>Governance, risk and compliance built for operational technology, not stretched from IT.</p>
+              <ul>
+                <li>SOCI Act and CIRMP compliance</li>
+                <li>AESCSF, IEC 62443 and NIST CSF assessments</li>
+                <li>OT risk, architecture and board advisory</li>
+              </ul>
+              <span className="go">Explore consulting →</span>
+            </Link>
+            <Link to="/protection" className="svc svc-blue">
+              <span className="num">02 · Protection</span>
+              <h3>OT Cyber Protection</h3>
+              <p>A proven zero trust platform that makes critical assets invisible to attackers, deployed with no downtime.</p>
+              <ul>
+                <li>Network cloaking for PLCs, RTUs and HMIs</li>
+                <li>Passwordless, phishing-resistant access</li>
+                <li>Microsegmentation and a virtual air-gap for legacy systems</li>
+              </ul>
+              <span className="go">Explore protection →</span>
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      <section className="alt">
+        <div className="wrap story">
+          <div>
+            <span className="eyebrow">Proven overseas. Now protecting Australia.</span>
+            <h2>We Didn't Build an Experiment. We Brought What Already Works.</h2>
+            <p className="lead">
+              Critical infrastructure can't be a test bed. So we partnered with a US technology leader whose zero trust OT
+              platform already protects more than 5,000 industrial sites in 22 countries, from energy producers and water
+              utilities to manufacturers, ports and defence facilities.
+            </p>
+            <div className="pillars3">
+              <div className="p3"><span className="n">1</span><div><h3>Proven at scale</h3><p>Over 500 million device hours of attack prevention in live plants, not labs.</p></div></div>
+              <div className="p3"><span className="n">2</span><div><h3>Built for OT</h3><p>Protects unpatchable legacy systems without re-addressing the network or stopping production.</p></div></div>
+              <div className="p3"><span className="n">3</span><div><h3>Delivered locally</h3><p>Designed, deployed and supported by Australian specialists, and mapped to your SOCI obligations.</p></div></div>
             </div>
           </div>
+          <div className="story-img">
+            <img src={img('control-room', 1200)} srcSet={srcSet('control-room')} sizes="(max-width:1024px) 100vw, 560px" alt="Technicians operating an industrial control room" loading="lazy" />
+            <div className="badge"><b>22</b><span>countries, now including Australia</span></div>
+          </div>
         </div>
-        <Chevrons className="k-hero-chev-bottom" />
       </section>
 
-      {/* Services grid, as on the original home page */}
-      <section className="k-services">
+      <section>
         <div className="wrap">
-          <div className="svc-grid">
-            {services.map((s) => (
-              <Link key={s.title} to={s.to} className="svc">
-                <h3>{s.title}</h3>
-                <p>{s.body}</p>
-                <span className="more-link">
-                  Learn more <Arrow />
-                </span>
-              </Link>
-            ))}
+          <span className="eyebrow">Proven in the field</span>
+          <h2>Real Results from Real Plants</h2>
+          <div className="hl">
+            <div><b>0 hrs</b><p>Downtime on the protected production line while a cyber attack shut the rest of the plant for two days.</p></div>
+            <div><b>20,000</b><p>Devices segmented across hundreds of remote oil and gas sites, integrated in under a month.</p></div>
+            <div><b>10 min</b><p>To replace a legacy VPN with zero trust access across two continents.</p></div>
           </div>
-        </div>
-      </section>
-
-      {/* Benefits row with line icons */}
-      <section className="k-benefits">
-        <div className="wrap">
-          <Title text="Must-Know OT Security {Benefits}" />
-          <div className="ben-grid">
-            {benefits.map((b) => (
-              <div key={b.title} className="ben">
-                <div className="ben-head">
-                  <b.icon size={40} strokeWidth={1.25} />
-                  <h3>{b.title}</h3>
-                </div>
-                <p>{b.body}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Approach block (image left, text right), mirroring "Our Approach to Essential Eight Assessment" */}
-      <section className="k-approach">
-        <div className="wrap approach-grid">
-          <PurdueDiagram />
-          <div>
-            <Title text="Our Approach to {IEC 62443 and SOCI} Assessment" />
-            <p>
-              We map your real architecture into zones and conduits, assess each against IEC 62443 and your SOCI
-              obligations, and deliver a prioritised roadmap that engineering can implement and your board can attest to.
-            </p>
-            <ol className="k-steps">
-              <li>
-                <b>Assess.</b> Asset visibility, risk and maturity against AESCSF, IEC 62443 or NIST CSF.
-              </li>
-              <li>
-                <b>Protect.</b> Close the highest-risk gaps first, with BlastShield™ and practical controls.
-              </li>
-              <li>
-                <b>Prove.</b> Map every control to your CIRMP, ready for annual attestation and audit.
-              </li>
-            </ol>
-            <Link to="/consulting" className="btn">
-              Our consulting services
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* Proof */}
-      <section className="k-proof">
-        <div className="wrap">
-          <Title text="Proven in the {Field}" />
-          <p className="sub">{featured.title}. BlastWave case study, manufacturing.</p>
-          <div className="proof-grid">
-            {metrics.map((m) => (
-              <div key={m.k} className="proof-stat">
-                <b>{m.v}</b>
-                <span>{m.k}</span>
-              </div>
-            ))}
-          </div>
-          <blockquote className="k-quote">
-            “{testimonials[0].quote}”<cite>{testimonials[0].who}</cite>
-          </blockquote>
-          <div className="trusted">
-            <span>BlastShield™ is trusted by</span>
-            {partner.customers.slice(0, 5).map((c) => (
-              <b key={c}>{c}</b>
-            ))}
-          </div>
-          <p className="center-links">
-            <Link to="/case-studies" className="more-link">
-              Read all four case studies <Arrow />
-            </Link>
-            <a href={featured.href} target="_blank" rel="noopener noreferrer" className="more-link">
-              Original case study (PDF) <External />
-            </a>
+          <p style={{ marginTop: 26 }}>
+            <Link to="/case-studies" className="more">Read the case studies →</Link>
           </p>
         </div>
       </section>
 
-      {/* Specialist areas, like the original four image cards */}
-      <section className="k-specialist">
+      <section className="alt">
         <div className="wrap">
-          <Title text="Critical Infrastructure {Sectors}" />
-          <div className="spec-grid">
-            {sectors.slice(0, 4).map((s) => (
-              <Link key={s.slug} to={`/sectors/${s.slug}`} className="spec">
-                <Photo name={s.photo} alt="" width={280} ratio={16 / 10} sizes="(max-width: 760px) 100vw, 280px" />
-                <h3>{s.name}</h3>
-                <p>{s.summary}</p>
-              </Link>
+          <div className="center">
+            <span className="eyebrow">Sector expertise</span>
+            <h2>Built for the Sectors SOCI Protects</h2>
+          </div>
+          <div className="sectors">
+            {SECTORS.map((x) => (
+              <SectorCard key={x.s} x={x} />
             ))}
           </div>
-          <p className="center-links">
-            <Link to="/sectors" className="more-link">
-              All sectors <Arrow />
-            </Link>
+          <p className="center" style={{ marginTop: 30 }}>
+            <Link to="/sectors" className="more">All sectors →</Link>
           </p>
         </div>
       </section>
 
-      <Faq />
-      <Contact />
+      <section>
+        <div className="wrap">
+          <div className="center">
+            <span className="eyebrow">FAQs</span>
+            <h2>
+              OT Cyber Defence <span className="red">FAQs</span>
+            </h2>
+          </div>
+          <div className="faq">
+            {FAQS.map(([q, a]) => (
+              <details key={q}>
+                <summary>{q}</summary>
+                <p>{a}</p>
+              </details>
+            ))}
+          </div>
+        </div>
+      </section>
     </>
   )
 }

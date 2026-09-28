@@ -1,56 +1,59 @@
 import { Link } from 'react-router-dom'
-import { company, sectors } from '../content.ts'
+import { SECTORS } from '../data.ts'
+import { company } from '../content.ts'
 import Placeholder from './Placeholder.tsx'
-import Logo from './Logo.tsx'
 
 export default function Footer() {
   return (
     <footer>
-      <div className="wrap foot-grid">
-        <div>
-          <Logo />
-          <p>
-            OT cybersecurity consulting and protection for Australian critical infrastructure. Official Australian partner
-            of BlastWave, Inc.
-          </p>
+      <div className="wrap">
+        <div className="fgrid">
+          <div>
+            <span className="flogo">
+              <img src="/brand/otcd-logo.png" alt="OT Cyber Defence" />
+            </span>
+            <p>OT cybersecurity consulting and protection for Australian critical infrastructure.</p>
+          </div>
+          <div>
+            <h4>Company</h4>
+            <ul>
+              <li><Link to="/expertise">Expertise</Link></li>
+              <li><Link to="/case-studies">Case studies</Link></li>
+              <li><Link to="/contact">Contact</Link></li>
+            </ul>
+          </div>
+          <div>
+            <h4>Services</h4>
+            <ul>
+              <li><Link to="/consulting">OT Cyber Consulting</Link></li>
+              <li><Link to="/protection">OT Cyber Protection</Link></li>
+            </ul>
+          </div>
+          <div>
+            <h4>Sectors</h4>
+            <ul>
+              {SECTORS.map((x) => (
+                <li key={x.s}>
+                  <Link to={`/sectors/${x.s}`}>{x.n}</Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div>
+            <h4>Contact</h4>
+            <ul>
+              <li>{company.address}</li>
+              <li>{company.email ? <a href={`mailto:${company.email}`}>{company.email}</a> : <Placeholder value="" label="email address" />}</li>
+              <li>{company.phone ? <a href={`tel:${company.phone.replace(/\s/g, '')}`}>{company.phone}</a> : <Placeholder value="" label="phone number" />}</li>
+            </ul>
+          </div>
         </div>
-        <div>
-          <h2>Company</h2>
-          <Link to="/expertise">Expertise</Link>
-          <Link to="/case-studies">Case studies</Link>
-          <Link to="/contact">Contact</Link>
+        <div className="fbot">
+          <span>
+            © {new Date().getFullYear()} {company.legalName}
+          </span>
+          <span>Securing OT Systems</span>
         </div>
-        <div>
-          <h2>Services</h2>
-          <Link to="/consulting">OT Cyber Consulting</Link>
-          <Link to="/protection">OT Cyber Protection</Link>
-          <Link to="/sectors">Sectors</Link>
-        </div>
-        <div>
-          <h2>Sectors</h2>
-          {sectors.slice(0, 4).map((s) => (
-            <Link key={s.slug} to={`/sectors/${s.slug}`}>
-              {s.name}
-            </Link>
-          ))}
-        </div>
-        <div>
-          <h2>Contact</h2>
-          <span>{company.address}</span>
-          <span>{company.email || <Placeholder value="" label="email address" />}</span>
-          <span>{company.phone || <Placeholder value="" label="phone number" />}</span>
-        </div>
-      </div>
-      <div className="wrap foot-base">
-        <span>
-          © {new Date().getFullYear()} {company.legalName} · ACN <Placeholder value={company.acn} label="ACN" />
-        </span>
-        <p className="fine">
-          * BlastWave and BlastShield are trademarks of BlastWave, Inc. Customer names, device-hour figures, case studies
-          and testimonials relate to BlastWave deployments and are drawn from BlastWave's published materials
-          (blastwave.com). Organisations listed under Expertise are where our team members have held roles and do not
-          imply endorsement.
-        </p>
       </div>
     </footer>
   )

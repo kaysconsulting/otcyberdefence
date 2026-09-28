@@ -1,95 +1,75 @@
+import { useEffect } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { sectors } from '../content.ts'
-import PageHero from '../components/PageHero.tsx'
-import More, { Evidence } from '../components/More.tsx'
-import CtaBand from '../components/CtaBand.tsx'
+import { SECTORS } from '../data.ts'
+import Banner from '../components/Banner.tsx'
+import Band from '../components/Band.tsx'
 import NotFound from './NotFound.tsx'
-import { Arrow, External } from '../components/Icon.tsx'
 
 export default function SectorPage() {
   const { slug } = useParams()
-  const s = sectors.find((x) => x.slug === slug)
-  if (!s) return <NotFound />
-  const others = sectors.filter((x) => x.slug !== s.slug)
-
+  const x = SECTORS.find((s) => s.s === slug)
+  useEffect(() => {
+    if (x) document.title = `${x.n} | OT Cyber Defence`
+  }, [x])
+  if (!x) return <NotFound />
+  const others = SECTORS.filter((o) => o !== x)
   return (
     <>
-      <PageHero
-        photo={s.photo}
-        eyebrow={`Sector · ${s.name}`}
-        title={`{${s.name}}: ${s.summary}`}
-        lead={`How we help ${s.name.toLowerCase()} operators meet their obligations and protect the systems that matter.`}
-        crumbs={[
-          { to: '/sectors', label: 'Sectors' },
-          { to: `/sectors/${s.slug}`, label: s.name },
-        ]}
+      <Banner
+        image={x.img}
+        crumbs={[{ to: '/sectors', label: 'Sectors' }, { label: x.n }]}
+        title={<span style={{ color: '#FF3B47' }}>{x.n}</span>}
+        text={x.t}
+        button={false}
+        style={{ paddingBottom: 130 }}
       />
-
-      <section className="light">
+      <section style={{ paddingTop: 0 }}>
         <div className="wrap">
-          <div className="cards2" style={{ marginTop: 0 }}>
+          <div className="sd">
             <div className="card">
               <span className="tag">Consulting</span>
               <h3>Governance, risk and compliance</h3>
-              <p>{s.consulting}</p>
-              <Link to="/consulting" className="text-link small">
-                Consulting services <Arrow />
-              </Link>
+              <p>{x.c}</p>
+              <p style={{ marginTop: 16 }}>
+                <Link className="more" to="/consulting">Consulting services →</Link>
+              </p>
             </div>
             <div className="card">
               <span className="tag">Protection</span>
-              <h3>BlastShield™ zero trust</h3>
-              <p>{s.protection}</p>
-              <Link to="/protection" className="text-link small">
-                How BlastShield works <Arrow />
-              </Link>
+              <h3>Zero trust OT protection</h3>
+              <p>{x.p}</p>
+              <p style={{ marginTop: 16 }}>
+                <Link className="more" to="/protection">How it works →</Link>
+              </p>
             </div>
           </div>
-
-          <More label="The challenges we see">
-            <ul>
-              {s.challenges.map((c) => (
-                <li key={c}>{c}</li>
-              ))}
-            </ul>
-          </More>
-          <More label="Systems in scope">
-            <div className="fw" style={{ marginTop: 0 }}>
-              {s.systems.map((x) => (
-                <span key={x}>{x}</span>
-              ))}
-            </div>
-          </More>
-          <More label="Regulation and standards">
-            <div className="fw" style={{ marginTop: 0 }}>
-              {s.regulation.map((x) => (
-                <span key={x}>{x}</span>
-              ))}
-            </div>
-            {s.reading && (
-              <Evidence>
-                <a href={s.reading.href} target="_blank" rel="noopener noreferrer">
-                  {s.reading.label} <External />
-                </a>
-              </Evidence>
-            )}
-          </More>
-        </div>
-      </section>
-
-      <section>
-        <div className="wrap">
-          <div className="mono eyebrow">Other sectors</div>
-          <div className="chip-links">
+          <div className="facts">
+            {[
+              ['The challenges we see', x.ch],
+              ['Systems in scope', x.sy],
+              ['Regulation and standards', x.rg],
+            ].map(([h, list]) => (
+              <div key={h as string}>
+                <h3>{h}</h3>
+                <ul>
+                  {(list as string[]).map((i) => (
+                    <li key={i}>{i}</li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+          <h3 style={{ marginTop: 56 }}>Other sectors</h3>
+          <div className="others">
             {others.map((o) => (
-              <Link key={o.slug} to={`/sectors/${o.slug}`}>
-                {o.name}
+              <Link key={o.s} to={`/sectors/${o.s}`}>
+                {o.n}
               </Link>
             ))}
           </div>
         </div>
       </section>
-      <CtaBand />
+      <Band title="Let's Work Together" />
     </>
   )
 }

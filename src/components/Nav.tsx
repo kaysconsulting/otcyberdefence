@@ -1,35 +1,41 @@
 import { useEffect, useState } from 'react'
 import { Link, NavLink, useLocation } from 'react-router-dom'
-import { Menu, X } from 'lucide-react'
-import { navLinks } from '../content.ts'
-import Logo from './Logo.tsx'
+
+const links = [
+  ['/', 'Home'],
+  ['/consulting', 'Consulting'],
+  ['/protection', 'Protection'],
+  ['/case-studies', 'Case Studies'],
+  ['/sectors', 'Sectors'],
+  ['/expertise', 'Expertise'],
+]
 
 export default function Nav() {
   const [open, setOpen] = useState(false)
   const { pathname } = useLocation()
   useEffect(() => setOpen(false), [pathname])
-
   return (
     <header>
       <div className={`wrap nav${open ? ' open' : ''}`}>
-        <Logo />
+        <Link to="/" className="logo">
+          <img src="/brand/otcd-logo.png" alt="OT Cyber Defence: Securing OT Systems" />
+        </Link>
         <ul>
-          <li>
-            <NavLink to="/" end>
-              Home
-            </NavLink>
-          </li>
-          {navLinks.map((l) => (
-            <li key={l.href}>
-              <NavLink to={l.href}>{l.label}</NavLink>
+          {links.map(([to, label]) => (
+            <li key={to}>
+              <NavLink to={to} end={to === '/'}>
+                {label}
+              </NavLink>
             </li>
           ))}
         </ul>
-        <Link to="/contact" className="btn nav-btn">
+        <Link to="/contact" className="btn btn-blue">
           Book an appointment
         </Link>
-        <button className="burger" aria-label="Menu" aria-expanded={open} onClick={() => setOpen((o) => !o)}>
-          {open ? <X size={22} strokeWidth={2} /> : <Menu size={22} strokeWidth={2} />}
+        <button className="burger" aria-label="Open menu" aria-expanded={open} onClick={() => setOpen((o) => !o)}>
+          <span></span>
+          <span></span>
+          <span></span>
         </button>
       </div>
     </header>

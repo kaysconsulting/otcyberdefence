@@ -1,16 +1,13 @@
 import { Link } from 'react-router-dom'
-import PageHero from '../components/PageHero.tsx'
-import { Arrow } from '../components/Icon.tsx'
+import Banner from '../components/Banner.tsx'
 
 export default function NotFound() {
   return (
     <>
-      <PageHero photo="signal" eyebrow="404" title="This page doesn't exist" lead="The link may be out of date." depth={false} />
+      <Banner image="rail-transport" crumbs={[{ label: 'Not found' }]} title="This page doesn't exist" text="The link may be out of date." button={false} />
       <section>
         <div className="wrap">
-          <Link to="/" className="text-link">
-            Back to home <Arrow />
-          </Link>
+          <Link to="/" className="more">Back to home →</Link>
         </div>
       </section>
     </>
