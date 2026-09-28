@@ -6,7 +6,7 @@ export default function Title({ as: Tag = 'h2', text, className }: { as?: Elemen
   const parts = text.split(/(\{[^}]+\})/g).filter(Boolean)
   return (
     <Tag className={className}>
-      {parts.map((p, i) => (p.startsWith('{') ? <span key={i} className="hl">{p.slice(1, -1)}</span> : p))}
+      {parts.map((p, i) => (p.startsWith('{') ? <span key={i} className="red">{p.slice(1, -1)}</span> : p))}
     </Tag>
   )
 }

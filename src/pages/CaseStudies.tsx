@@ -1,62 +1,50 @@
-import { caseDetail, caseStudies } from '../content.ts'
-import PageHero from '../components/PageHero.tsx'
-import More, { Evidence } from '../components/More.tsx'
-import CtaBand from '../components/CtaBand.tsx'
-import { External } from '../components/Icon.tsx'
+import { CASES } from '../data.ts'
+import Banner from '../components/Banner.tsx'
+import Band from '../components/Band.tsx'
 
 export default function CaseStudies() {
   return (
     <>
-      <PageHero
-        photo="refinery"
+      <Banner
+        image="oil-gas"
+        crumbs={[{ label: 'Case studies' }]}
         eyebrow="Case studies"
-        title="Outcomes from {Real-World} Deployments"
-        lead="Four published BlastWave case studies from oil and gas, manufacturing, hazardous logistics and technology. Each links to the original document."
-        crumbs={[{ to: '/case-studies', label: 'Case studies' }]}
+        title="Outcomes from Real-World Deployments"
+        text="The platform we bring to Australia has been proven in oil and gas, manufacturing, hazardous logistics and technology. A selection of results from our partner's global deployments."
       />
-      <section className="light">
-        <div className="wrap case-list">
-          {caseStudies.map((c) => {
-            const d = caseDetail[c.title]
-            return (
-              <article key={c.title} className="case-row">
-                <div>
-                  <span className="tag">{c.tag}</span>
-                  <h2 className="case-title">{c.title}</h2>
-                  <p className="lead">{c.body}</p>
-                  {d && (
-                    <More label="Challenge and approach">
-                      <dl className="ca">
-                        <dt>Challenge</dt>
-                        <dd>{d.challenge}</dd>
-                        <dt>Approach</dt>
-                        <dd>{d.approach}</dd>
-                      </dl>
-                      <Evidence>
-                        <a href={c.href} target="_blank" rel="noopener noreferrer">
-                          Original case study (PDF, BlastWave) <External />
-                        </a>
-                      </Evidence>
-                    </More>
-                  )}
-                </div>
-                <div className="metric-stack">
-                  {d?.metrics.map((m) => (
-                    <div key={m.k}>
-                      <b>{m.v}</b>
-                      <span>{m.k}</span>
+      <section>
+        <div className="wrap">
+          <div className="grid2" style={{ marginTop: 0 }}>
+            {CASES.map((c) => (
+              <div key={c.title} className="card case">
+                <span className="tag">{c.tag}</span>
+                <h3>{c.title}</h3>
+                <p>{c.body}</p>
+                <div className="figs">
+                  {c.figs.map(([b, s]) => (
+                    <div key={s}>
+                      <b>{b}</b>
+                      <span>{s}</span>
                     </div>
                   ))}
                 </div>
-              </article>
-            )
-          })}
-          <p className="attrib" style={{ color: 'var(--inkmuted)' }}>
-            These case studies describe BlastWave deployments and are drawn from BlastWave's published materials.
-          </p>
+                <details>
+                  <summary>Challenge and approach</summary>
+                  <p>{c.more}</p>
+                </details>
+              </div>
+            ))}
+          </div>
+          <div className="quote">
+            <div>
+              <q>In test after test, I was unsuccessful at circumventing its passwordless MFA login, or breaking out of the microsegmentation to pivot inside the network.</q>
+              <small>Former CISO and security researcher, independent testing</small>
+            </div>
+            <div className="big"><b>0</b><span>successful bypasses</span></div>
+          </div>
         </div>
       </section>
-      <CtaBand />
+      <Band title="Let's Talk About Your Sites" />
     </>
   )
 }

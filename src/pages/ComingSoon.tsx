@@ -38,7 +38,7 @@ export default function ComingSoon() {
           </span>
         </div>
         {company.email && (
-          <a className="btn" href={`mailto:${company.email}?subject=Briefing%20request`}>
+          <a className="btn btn-blue" href={`mailto:${company.email}?subject=Briefing%20request`}>
             Book an appointment
           </a>
         )}
@@ -46,7 +46,6 @@ export default function ComingSoon() {
       <Chevrons className="soon-chev-bottom" />
       <p className="soon-foot">
         © {new Date().getFullYear()} {company.legalName}
-        {company.acn && ` · ACN ${company.acn}`}
       </p>
     </main>
   )

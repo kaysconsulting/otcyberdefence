@@ -342,10 +342,9 @@ export const expertise = {
 // Placeholders still to be supplied — render highlighted until filled in.
 export const company = {
   legalName: 'OT Cyber Defence Pty Ltd',
-  acn: '', // e.g. '123 456 789'
   address: 'Unit 217, 14 Lexington Drive, Bella Vista NSW 2153',
-  email: '', // e.g. 'hello@otcyberdefence.com.au'
-  phone: '', // e.g. '02 1234 5678'
+  email: 'info@otcyberdefence.com.au',
+  phone: '1300 224 389',
 }
 
 // ─── Deeper layers (shown on section pages, behind "details" toggles) ────────────────────────
@@ -483,7 +482,7 @@ export const caseDetail: Record<string, { challenge: string; approach: string; m
 export type Sector = {
   slug: string
   name: string
-  photo: import('./media.ts').PhotoKey
+  photo: string
   summary: string
   challenges: string[]
   systems: string[]

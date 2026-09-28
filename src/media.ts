@@ -1,24 +1,27 @@
-// Photography: Unsplash (free Unsplash License). Swap for your own site photography any time.
-// High resolution: q=85, and Photo serves 1x/1.5x/2x widths so images stay sharp on retina screens.
-const u = (id: string) => (w = 1600, h?: number) =>
-  `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=${w}${h ? `&h=${h}` : ''}&q=85`
+// All images and videos are self-hosted in /public/media (downloaded from Pexels, free commercial licence).
+export type ImgKey =
+  | 'rail-transport'
+  | 'aviation-airports'
+  | 'energy-electricity'
+  | 'water-wastewater'
+  | 'oil-gas'
+  | 'ports-maritime'
+  | 'mining-resources'
+  | 'government-defence'
+  | 'consulting-banner'
+  | 'expertise-banner'
+  | 'control-room'
 
-export const photos = {
-  hero: u('1473341304170-971dccb5ac1e'), // transmission towers at dusk
-  harbour: u('1531033056439-63578c0d9f22'), // Sydney Harbour Bridge at night
-  advisory: u('1581091215367-9b6c00b3035a'), // engineer assessing industrial equipment
-  rail: u('1646215992825-688426407576'), // Sydney double-deck train under overhead wiring
-  signal: u('1612083111232-29f08821e47a'), // rail tracks
-  airport: u('1715268358642-fdab48114710'), // airport from the air
-  jetbridge: u('1786788684882-14234a6c8613'), // jet bridge, foggy apron
-  substation: u('1776251896448-a5eb8ae25e35'), // substation insulators
-  water: u('1705708551758-76b153fa536e'), // clarifier tanks from above
-  control: u('1738918937796-743064feefa1'), // control room
-  port: u('1590496793907-4d66e2994b4d'), // container cranes at dusk
-  refinery: u('1629447388369-760612337eff'), // refinery at night
-  mine: u('1570979872224-a1ea9f1248b0'), // open-pit mine from above
-  parliament: u('1672264597620-d792bb6de88d'), // Parliament House, Canberra
-  engineers: u('1778074762022-c33cc42f79ae'), // engineers reviewing plans on site
-  network: u('1594915440248-1e419eba6611'), // fibre into a network switch
-}
-export type PhotoKey = keyof typeof photos
+const WIDTHS = [800, 1200, 2400] as const
+export const img = (k: ImgKey, w: (typeof WIDTHS)[number] = 1200) => `/media/img/${k}-${w}.jpg`
+export const srcSet = (k: ImgKey) => WIDTHS.map((w) => `${img(k, w)} ${w}w`).join(', ')
+
+export const CLIPS = [
+  { n: 'Energy', k: 'energy' },
+  { n: 'Water', k: 'water' },
+  { n: 'Rail & Transport', k: 'rail' },
+  { n: 'Ports', k: 'ports' },
+  { n: 'Renewables', k: 'renewables' },
+] as const
+export const clip = (k: string, small: boolean) => `/media/video/hero-${k}-${small ? 720 : 1080}.mp4`
+export const poster = (k: string) => `/media/video/hero-${k}-poster.jpg`
