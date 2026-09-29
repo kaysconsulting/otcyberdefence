@@ -78,6 +78,8 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
 .stat b{display:block;font-size:clamp(2.2rem,4vw,3.2rem);font-weight:900;line-height:1;margin-bottom:8px}
 .stat b i{font-style:normal;color:#FF5C66}
 .stat span{font-size:.95rem;color:#DCE6F2}
+.stats3 .wrap{grid-template-columns:repeat(3,1fr)}
+.stats3 .stat{text-align:center}
 .stats-note{background:var(--blue-d);color:#B9C8DA;font-size:.8rem;text-align:center;padding:8px 16px}
 
 /* TWO SERVICE BOXES */
@@ -277,6 +279,8 @@ footer{background:var(--blue-d);color:#B9C8DA;padding:64px 0 28px;font-size:.93r
   .nav.open ul{display:flex;flex-direction:column;position:absolute;top:78px;left:0;right:0;background:#fff;padding:18px 16px 24px;border-bottom:1px solid var(--line);gap:14px}
   .duo,.grid2,.grid3,.svcs,.sd,.facts,.steps,.hl,.row2{grid-template-columns:1fr}
   .stats .wrap{grid-template-columns:1fr 1fr}
+  .stats3 .wrap{grid-template-columns:repeat(3,1fr)}
+  .stats3 .stat b{font-size:1.8rem}
   .stat{border-right:0;border-bottom:1px solid rgba(255,255,255,.18);padding:28px 8px}
   .quote{grid-template-columns:1fr;padding:30px}.quote .big{text-align:left}
   .svc{padding:34px 26px;min-height:0}
