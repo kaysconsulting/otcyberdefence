@@ -3,10 +3,9 @@ import { createRoot } from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
 import './index.css'
 import App from './App.tsx'
-import ComingSoon from './pages/ComingSoon.tsx'
-import { comingSoon, noIndex } from './siteMode.ts'
 
-if (noIndex) {
+// VITE_NOINDEX=true (e.g. on Vercel Preview / the test site) keeps that deployment out of search engines.
+if (import.meta.env.VITE_NOINDEX === 'true') {
   const m = document.createElement('meta')
   m.name = 'robots'
   m.content = 'noindex, nofollow'
@@ -15,12 +14,8 @@ if (noIndex) {
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    {comingSoon ? (
-      <ComingSoon />
-    ) : (
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>
-    )}
+    <BrowserRouter>
+      <App />
+    </BrowserRouter>
   </StrictMode>,
 )
