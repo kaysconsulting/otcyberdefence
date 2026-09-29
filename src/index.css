@@ -78,6 +78,8 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
 .stat b{display:block;font-size:clamp(2.2rem,4vw,3.2rem);font-weight:900;line-height:1;margin-bottom:8px}
 .stat b i{font-style:normal;color:#FF5C66}
 .stat span{font-size:.95rem;color:#DCE6F2}
+.stats3 .wrap{grid-template-columns:repeat(3,1fr)}
+.stats3 .stat{text-align:center}
 .stats-note{background:var(--blue-d);color:#B9C8DA;font-size:.8rem;text-align:center;padding:8px 16px}
 
 /* TWO SERVICE BOXES */
@@ -277,6 +279,8 @@ footer{background:var(--blue-d);color:#B9C8DA;padding:64px 0 28px;font-size:.93r
   .nav.open ul{display:flex;flex-direction:column;position:absolute;top:78px;left:0;right:0;background:#fff;padding:18px 16px 24px;border-bottom:1px solid var(--line);gap:14px}
   .duo,.grid2,.grid3,.svcs,.sd,.facts,.steps,.hl,.row2{grid-template-columns:1fr}
   .stats .wrap{grid-template-columns:1fr 1fr}
+  .stats3 .wrap{grid-template-columns:repeat(3,1fr)}
+  .stats3 .stat b{font-size:1.8rem}
   .stat{border-right:0;border-bottom:1px solid rgba(255,255,255,.18);padding:28px 8px}
   .quote{grid-template-columns:1fr;padding:30px}.quote .big{text-align:left}
   .svc{padding:34px 26px;min-height:0}
@@ -291,29 +295,5 @@ footer{background:var(--blue-d);color:#B9C8DA;padding:64px 0 28px;font-size:.93r
   .case .figs b{font-size:1.3rem}
 }
 @media (prefers-reduced-motion:reduce){.hero video{transition:none}.dots button.on::after{animation:none;transform:none}}
-
-/* Shared by the Coming Soon page */
-.chev-row{display:block}
-.chev-row.red{color:var(--red)}
-.chev-row.blue{color:var(--blue)}
 .ph{background:#FDECEE;color:var(--red);padding:0 6px;border-radius:3px}
 .nav ul a.active{color:var(--blue);border-color:var(--red)}
-
-/* ─── COMING SOON ─────────────────────────────────────────────────────── */
-.soon{min-height:100svh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px 30px;background:linear-gradient(180deg,#fff 0%,var(--bg2) 100%);position:relative;overflow:hidden;text-align:center}
-.soon-card{max-width:760px;display:flex;flex-direction:column;align-items:center}
-.soon-logo{height:130px;width:auto;margin-bottom:26px}
-.soon-badge{display:inline-block;font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#fff;background:var(--red);padding:7px 16px;border-radius:3px;margin-bottom:22px}
-.soon h1{font-size:clamp(32px,4.6vw,52px);color:var(--blue);margin-bottom:18px}
-.soon .lead{margin:0 auto 24px}
-.soon-tags{list-style:none;display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-bottom:22px}
-.soon-tags li{padding:7px 14px;border:1px solid var(--line);background:#fff;border-radius:3px;font-weight:600;color:var(--ink);font-size:15px}
-.soon .partner-line{margin:0 0 26px}
-.soon-contact{display:flex;flex-wrap:wrap;justify-content:center;gap:12px 28px;margin-bottom:28px;font-size:15px}
-.soon-contact a,.soon-contact span{display:inline-flex;align-items:center;gap:8px;color:var(--ink)}
-.soon-contact a:hover{color:var(--blue)}
-.soon-contact svg{color:var(--blue)}
-.soon-chev-top{position:absolute;top:30px;right:40px}
-.soon-chev-bottom{margin-top:40px}
-.soon-foot{margin-top:18px;font-size:13px;color:var(--soft)}
-@media (max-width:600px){ .soon-logo{height:96px} .soon-chev-top{display:none} }

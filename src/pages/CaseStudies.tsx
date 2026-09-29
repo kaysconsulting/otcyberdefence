@@ -10,7 +10,7 @@ export default function CaseStudies() {
         crumbs={[{ label: 'Case studies' }]}
         eyebrow="Case studies"
         title="Outcomes from Real-World Deployments"
-        text="The platform we bring to Australia has been proven in oil and gas, manufacturing, hazardous logistics and technology. A selection of results from our partner's global deployments."
+        text="The platform we bring to Australia has been proven in several OT industries, such as oil and gas and manufacturing. Please find a selection of results from our partner's global deployments."
       />
       <section>
         <div className="wrap">

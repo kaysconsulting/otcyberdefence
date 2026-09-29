@@ -69,17 +69,6 @@ export default function Consulting() {
         </div>
       </section>
 
-      <section>
-        <div className="wrap">
-          <span className="eyebrow">How an engagement runs</span>
-          <h2>We Start with the Plant, Not the Policy</h2>
-          <div className="steps">
-            <div className="step"><span className="tag">Assess</span><h3>Know where you stand</h3><p style={{ color: 'var(--muted)' }}>Map your assets and SOCI obligations, and baseline maturity against AESCSF, IEC 62443 or NIST CSF.</p></div>
-            <div className="step"><span className="tag">Protect</span><h3>Close the highest-risk gaps fast</h3><p style={{ color: 'var(--muted)' }}>Deploy cloaking, passwordless access and segmentation, prioritised by the risk assessment, with no downtime.</p></div>
-            <div className="step"><span className="tag">Prove</span><h3>Evidence for the board and regulator</h3><p style={{ color: 'var(--muted)' }}>Map every control back to your CIRMP and framework, ready for annual attestation and audit.</p></div>
-          </div>
-        </div>
-      </section>
       <Band title="Need a SOCI or AESCSF Roadmap?" />
     </>
   )

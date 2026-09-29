@@ -25,15 +25,14 @@ export default function Protection() {
         crumbs={[{ label: 'Protection' }]}
         eyebrow="OT Cyber Protection"
         title="Make Critical Assets Invisible to Attackers"
-        text="We design, deploy and support a patented zero trust OT platform that already protects more than 5,000 sites in 22 countries, including unpatchable legacy systems, without downtime."
+        text="Our US partner helps us deploy and support their patented zero trust OT platform, which already protects more than 5,000 sites in 22 countries, including unpatchable legacy systems, without downtime."
       />
 
-      <div className="stats">
+      <div className="stats stats3">
         <div className="wrap">
           <div className="stat"><b>5,000<i>+</i></b><span>ICS/OT sites protected</span></div>
           <div className="stat"><b>22</b><span>Countries</span></div>
           <div className="stat"><b>500M<i>+</i></b><span>Device hours of attack prevention</span></div>
-          <div className="stat"><b>4 hrs</b><span>To segment 97 devices</span></div>
         </div>
       </div>
 

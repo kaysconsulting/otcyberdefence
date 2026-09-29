@@ -19,7 +19,7 @@ export const SECTORS: Sector[] = [
     n: 'Rail & Transport',
     img: 'rail-transport',
     t: 'Signalling, traction power and tunnel systems where cyber risk is also a safety risk.',
-    c: 'Program-level OT security governance, zone and conduit design, vendor CMP review and FAT/SAT security assurance. Our team has held this role on major Transport for NSW programs.',
+    c: 'Program-level OT security governance, zone and conduit design, vendor CMP review and FAT/SAT security assurance, drawing on experience across major transport programs.',
     p: 'Cloaking and segmentation for station and wayside systems, and recorded, passwordless remote access for maintenance vendors.',
     ch: ['Safety-critical signalling with decades-long lifecycles', 'Multi-vendor delivery where security must hold across every integrator', 'Cyber and functional safety cases that must agree'],
     sy: ['Signalling & train control', 'Traction power & SCADA', 'Tunnel ventilation', 'Fire & life safety', 'Passenger information', 'Station BMS'],
@@ -160,7 +160,7 @@ export const CASES = [
 export const FAQS = [
   ['What does OT Cyber Defence do?', 'We help Australian critical infrastructure operators meet their SOCI obligations and secure their operational technology. We deliver OT cyber consulting (SOCI, AESCSF, IEC 62443, NIST CSF) and OT cyber protection using a zero trust platform proven at more than 5,000 sites worldwide.'],
   ['Who do you work with?', 'Operators of the systems SOCI protects: rail and transport, aviation and airports, energy, water, oil and gas, ports, mining and government facilities.'],
-  ['Can you protect legacy systems that cannot be patched?', 'Yes. Our protection platform cloaks PLCs, RTUs and HMIs so they cannot be discovered, and creates a virtual air-gap around equipment that cannot be updated.'],
+  ['Can legacy systems that cannot be patched be protected?', 'Yes. The platform cloaks PLCs, RTUs and HMIs so they cannot be discovered, and creates a virtual air-gap around equipment that cannot be updated.'],
   ['Does deployment need downtime or a network redesign?', 'No. The platform runs as a software overlay on your existing network, with no re-addressing or redesign. We plan every deployment around your operations.'],
   ['Which frameworks do you work with?', 'SOCI Act 2018 and the CIRMP Rules, AESCSF, ISA/IEC 62443, NIST CSF 2.0, NIST SP 800-82, ISO/IEC 27001 and the ACSC Essential Eight.'],
   ['How do I get started?', 'Book a 30-minute appointment. We will discuss your obligations and systems, and agree the right first step.'],

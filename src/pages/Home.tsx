@@ -11,7 +11,7 @@ export default function Home() {
         <HeroVideo />
         <div className="wrap">
           <h1>
-            Your <span className="red">Trusted Partner</span> in OT Cybersecurity and Critical Infrastructure Compliance.
+            Your <span className="red">Trusted Partner</span> in Operational Technology (OT) Cybersecurity
           </h1>
           <p>
             Proven OT protection, now in Australia. Already securing more than 5,000 industrial sites across 22 countries,
