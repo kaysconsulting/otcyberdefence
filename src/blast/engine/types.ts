@@ -13,6 +13,7 @@ export interface Inputs {
   removableMedia: 'uncontrolled' | 'controlled'
   sisZone: 'shared' | 'dedicated'
   itOtLink: 'direct' | 'via_dmz' | 'airgap_claimed'
+  sisKeySwitch: 'program' | 'run'
 }
 
 export type EntryId = 'phished_login' | 'stolen_remote_cred' | 'infected_usb' | 'poisoned_update' | 'vendor_account'
@@ -30,6 +31,7 @@ export interface Conduit {
   to: ZoneId
   strength: Strength
   allowedFlow?: string // e.g. 'EWS programming traffic'
+  remoteFlow?: boolean // a permitted remote-access route (e.g. DMZ jump host to site operations)
 }
 
 export interface Site {
@@ -66,7 +68,12 @@ export interface SimResult {
   exposureScore: number
   band: Band
   sisReached: boolean
+  /** Safety network reached AND key switches allow logic changes. */
+  sisLogicChangeable: boolean
   l1Reached: boolean
+  /** Conduits crossed before reaching control (L1); null if control was not reached. */
+  stepsToControl: number | null
+  capability: Capability
   site: Site
 }
 

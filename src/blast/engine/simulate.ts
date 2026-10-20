@@ -15,19 +15,21 @@ export function simulate(rawInputs: Inputs, entry: EntryId, capability: Capabili
   const blocked: BlockedStep[] = []
   const reachedZones = new Set<ZoneId>()
   const reachedAssets = new Set<string>()
+  const depthOf = new Map<ZoneId, number>()
 
   if (res.succeeded) {
-    const queue: { zone: ZoneId; asset?: string }[] = []
+    const queue: { zone: ZoneId; asset?: string; depth: number }[] = []
     for (const l of res.landing) {
       if (!site.zones.includes(l.zone)) continue
       path.push({ kind: 'entry', to: l.zone, reason: res.reason })
-      queue.push(l)
+      queue.push({ ...l, depth: 0 })
     }
 
     while (queue.length) {
-      const { zone, asset } = queue.shift()!
+      const { zone, asset, depth } = queue.shift()!
       if (reachedZones.has(zone)) continue
       reachedZones.add(zone)
+      depthOf.set(zone, depth)
 
       const zoneAssets = site.assets.filter((a) => a.zone === zone)
       const landingAsset = zoneAssets.find((a) => a.id === asset) ?? zoneAssets[0]
@@ -49,12 +51,12 @@ export function simulate(rawInputs: Inputs, entry: EntryId, capability: Capabili
         if (reachedZones.has(c.to) || !site.zones.includes(c.to)) continue
         if (queue.some((q) => q.zone === c.to)) continue
         const eff = effectiveStrength(c, inputs, entry, reachedHere)
-        const { ok, viaFlow } = canCross(c, eff, capability, inputs, reachedAssets.has('L3-ews'))
+        const { ok, viaFlow, viaCreds, commodity } = canCross(c, eff, capability, inputs, reachedAssets.has('L3-ews'), entry)
         if (ok) {
-          path.push({ kind: 'cross', from: zone, to: c.to, reason: crossReason(c, eff, inputs, viaFlow) })
-          queue.push({ zone: c.to })
+          path.push({ kind: 'cross', from: zone, to: c.to, reason: crossReason(c, eff, inputs, viaFlow, viaCreds) })
+          queue.push({ zone: c.to, depth: depth + 1 })
         } else if (!blocked.some((b) => b.from === zone && b.to === c.to)) {
-          blocked.push({ from: zone, to: c.to, reason: blockReason(c, eff, inputs) })
+          blocked.push({ from: zone, to: c.to, reason: blockReason(c, eff, inputs, commodity) })
         }
       }
     }
@@ -75,7 +77,10 @@ export function simulate(rawInputs: Inputs, entry: EntryId, capability: Capabili
     exposureScore: score,
     band: bandFor(score),
     sisReached: reachedZones.has('SIS'),
+    sisLogicChangeable: reachedZones.has('SIS') && inputs.sisKeySwitch === 'program',
     l1Reached: reachedZones.has('L1'),
+    stepsToControl: depthOf.has('L1') ? depthOf.get('L1')! : null,
+    capability,
     site,
   }
 }
@@ -85,8 +90,13 @@ export const ALL_ENTRIES: EntryId[] = ['phished_login', 'stolen_remote_cred', 'i
 /** Main result: run every entry point and return all runs plus the worst case. */
 export function worstCase(inputs: Inputs, capability: Capability = 2) {
   const runs = ALL_ENTRIES.map((e) => simulate(inputs, e, capability))
-  const worst = runs.reduce((w, r) =>
-    r.exposureScore > w.exposureScore || (r.exposureScore === w.exposureScore && r.sisReached && !w.sisReached) ? r : w,
-  )
+  const worst = runs.reduce((w, r) => {
+    if (r.exposureScore !== w.exposureScore) return r.exposureScore > w.exposureScore ? r : w
+    if (r.sisLogicChangeable !== w.sisLogicChangeable) return r.sisLogicChangeable ? r : w
+    // Same reach: the faster route to control is the worse case.
+    const rs = r.stepsToControl ?? 99
+    const ws = w.stepsToControl ?? 99
+    return rs < ws ? r : w
+  })
   return { worst, runs }
 }
