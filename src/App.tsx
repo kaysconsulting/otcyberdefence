@@ -11,6 +11,8 @@ import SectorPage from './pages/SectorPage.tsx'
 import Expertise from './pages/Expertise.tsx'
 import ContactPage from './pages/ContactPage.tsx'
 import NotFound from './pages/NotFound.tsx'
+import BlastRadius from './pages/BlastRadius.tsx'
+import Privacy from './pages/Privacy.tsx'
 
 function ScrollToTop() {
   const { pathname, hash } = useLocation()
@@ -36,6 +38,8 @@ export default function App() {
           <Route path="/sectors/:slug" element={<SectorPage />} />
           <Route path="/expertise" element={<Expertise />} />
           <Route path="/contact" element={<ContactPage />} />
+          <Route path="/blast-radius" element={<BlastRadius />} />
+          <Route path="/privacy" element={<Privacy />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </main>

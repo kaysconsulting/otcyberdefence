@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from 'react'
+import { Link } from 'react-router-dom'
 import { company } from '../content.ts'
 import Banner from '../components/Banner.tsx'
 import Placeholder from '../components/Placeholder.tsx'
@@ -126,6 +127,9 @@ export default function ContactPage() {
                   </label>
                 </div>
                 <label>Message<textarea name="message" rows={4} /></label>
+                <p className="fine" style={{ marginTop: 0 }}>
+                  We use your details only to respond to your request. See our <Link to="/privacy">privacy policy</Link>.
+                </p>
                 <p id="formMsg" role="status" style={{ fontWeight: 600, color: msg?.ok ? 'var(--blue)' : 'var(--red)' }}>
                   {msg?.t}
                 </p>

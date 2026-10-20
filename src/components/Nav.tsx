@@ -8,6 +8,7 @@ const links = [
   ['/case-studies', 'Case Studies'],
   ['/sectors', 'Sectors'],
   ['/expertise', 'Expertise'],
+  ['/blast-radius', 'Blast Radius'],
 ]
 
 export default function Nav() {

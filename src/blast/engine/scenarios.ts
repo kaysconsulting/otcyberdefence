@@ -1,0 +1,74 @@
+import type { Capability, EntryId, Inputs, ScenarioId, ScenarioResult, ZoneId } from './types.ts'
+import { simulate } from './simulate.ts'
+import { normalise } from './inputs.ts'
+import { scenarioReason } from '../content/copy.ts'
+
+export interface Scenario {
+  id: ScenarioId
+  name: string
+  year: number
+  entries: EntryId[]
+  capability: Capability
+  target: ZoneId | 'spread' | 'shutdown'
+  targetLabel: string
+  facts: string // verified facts only (spec section 8)
+}
+
+export const SCENARIOS: Scenario[] = [
+  { id: 'stuxnet', name: 'Stuxnet', year: 2010, entries: ['infected_usb'], capability: 3, target: 'L1', targetLabel: 'Control (PLCs)',
+    facts: 'Crossed an air gap on removable media; altered PLC logic while showing normal readings to operators.' },
+  { id: 'ukraine2015', name: 'Ukraine power grid', year: 2015, entries: ['phished_login', 'stolen_remote_cred'], capability: 2, target: 'L2', targetLabel: 'Supervisory control (HMIs)',
+    facts: 'Phishing, stolen VPN credentials, breakers opened remotely; around 225,000 customers lost power.' },
+  { id: 'triton', name: 'Triton', year: 2017, entries: ['phished_login'], capability: 3, target: 'SIS', targetLabel: 'Safety systems',
+    facts: 'First known malware built to target safety instrumented systems.' },
+  { id: 'notpetya', name: 'NotPetya', year: 2017, entries: ['poisoned_update'], capability: 1, target: 'spread', targetLabel: 'Spread across the site',
+    facts: "Spread through a software update; disrupted Maersk worldwide and Cadbury's Hobart factory." },
+  { id: 'colonial', name: 'Colonial Pipeline', year: 2021, entries: ['stolen_remote_cred'], capability: 1, target: 'shutdown', targetLabel: 'Operational shutdown',
+    facts: 'Leaked password on a legacy VPN account without MFA; pipeline shut down for days; US$4.4m ransom paid.' },
+  { id: 'dpworld', name: 'DP World Australia', year: 2023, entries: ['phished_login'], capability: 2, target: 'shutdown', targetLabel: 'Operational shutdown',
+    facts: 'Ports in Sydney, Melbourne, Brisbane and Fremantle paused for around three days; around 30,000 containers stranded.' },
+]
+
+const intertwined = (i: Inputs) => i.itOtLink === 'direct' || i.architecture === 'flat' || i.architecture === 'vlans'
+
+/** Spec 8: replay a real attack against the visitor's layout. */
+export function runScenario(rawInputs: Inputs, id: ScenarioId): ScenarioResult {
+  const inputs = normalise(rawInputs)
+  const sc = SCENARIOS.find((s) => s.id === id)!
+  const runs = sc.entries.map((e) => simulate(inputs, e, sc.capability))
+  const reachedZones = [...new Set(runs.flatMap((r) => r.reachedZones))]
+  const reachedAssetIds = [...new Set(runs.flatMap((r) => r.reachedAssetIds))]
+  const path = runs.flatMap((r) => r.path)
+  const anyEntry = runs.some((r) => r.entrySucceeded)
+  const base = { id, runs, reachedZones, reachedAssetIds, path }
+
+  if (!anyEntry) return { ...base, succeeded: false, reason: runs.map((r) => r.entryReason).join(' ') }
+
+  if (sc.target === 'shutdown') {
+    return intertwined(inputs)
+      ? { ...base, succeeded: true, reason: scenarioReason.intertwined }
+      : { ...base, succeeded: false, reason: scenarioReason.separable }
+  }
+
+  if (sc.target === 'spread') {
+    const spread = path.some((p) => p.kind === 'cross') || runs.some((r) => r.reachedAssetIds.length > r.entryZones.length)
+    if (spread) return { ...base, succeeded: true, reason: scenarioReason.spread }
+    const stoppedAt = runs.flatMap((r) => r.blocked)[0]
+    return { ...base, succeeded: false, reason: stoppedAt ? `${scenarioReason.contained} ${stoppedAt.reason}` : scenarioReason.contained, stoppedAt }
+  }
+
+  if (reachedZones.includes(sc.target)) return { ...base, succeeded: true, reason: scenarioReason.reached(sc.target) }
+
+  // Stopped: prefer the conduit into the target itself, otherwise the deepest blocked conduit.
+  const allBlocked = runs.flatMap((r) => r.blocked).filter((b) => !reachedZones.includes(b.to))
+  const order: ZoneId[] = ['L4', 'L35', 'L3', 'L2', 'L1', 'SIS']
+  const stoppedAt =
+    allBlocked.find((b) => b.to === sc.target) ?? [...allBlocked].sort((a, b) => order.indexOf(b.to) - order.indexOf(a.to))[0]
+  const failedEntries = runs.filter((r) => !r.entrySucceeded).map((r) => r.entryReason)
+  return {
+    ...base,
+    succeeded: false,
+    stoppedAt,
+    reason: stoppedAt ? stoppedAt.reason : failedEntries.join(' '),
+  }
+}

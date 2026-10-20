@@ -20,6 +20,7 @@ export default function Footer() {
               <li><Link to="/expertise">Expertise</Link></li>
               <li><Link to="/case-studies">Case studies</Link></li>
               <li><Link to="/contact">Contact</Link></li>
+              <li><Link to="/privacy">Privacy policy</Link></li>
             </ul>
           </div>
           <div>
@@ -52,7 +53,9 @@ export default function Footer() {
           <span>
             © {new Date().getFullYear()} {company.legalName}
           </span>
-          <span>Securing OT Systems</span>
+          <span>
+            <Link to="/privacy">Privacy policy</Link> · Securing OT Systems
+          </span>
         </div>
       </div>
     </footer>
