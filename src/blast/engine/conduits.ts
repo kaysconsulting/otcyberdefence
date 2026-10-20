@@ -34,15 +34,23 @@ export function effectiveStrength(c: Conduit, inputs: Inputs, entry: EntryId, re
 }
 
 /** Whether the attacker can cross, and if so whether it was by riding a legitimate flow. */
-export function canCross(c: Conduit, eff: Effective, capability: Capability, inputs: Inputs, ewsReached: boolean) {
-  if (capability > eff.strength) return { ok: true, viaFlow: false }
+/** Ways in that arrive holding a valid login, which permitted remote-access routes will accept. */
+export const CREDENTIAL_ENTRIES: EntryId[] = ['stolen_remote_cred', 'vendor_account']
+
+export function canCross(c: Conduit, eff: Effective, capability: Capability, inputs: Inputs, ewsReached: boolean, entry: EntryId) {
+  // Commodity crews (ransomware) take over Windows systems; changing PLC or safety logic needs OT know-how.
+  if (capability === 1 && (c.to === 'L1' || c.to === 'SIS')) return { ok: false, viaFlow: false, viaCreds: false, commodity: true }
+  // A stolen login does not need to beat a firewall: the conduit is configured to let that user through.
+  if (c.remoteFlow && CREDENTIAL_ENTRIES.includes(entry) && !eff.airgap) return { ok: true, viaFlow: false, viaCreds: true, commodity: false }
+  if (capability > eff.strength) return { ok: true, viaFlow: false, viaCreds: false, commodity: false }
   const flowUsable = !!c.allowedFlow && ewsReached && inputs.visibility === 'visible' && eff.strength < 3
-  return { ok: flowUsable, viaFlow: flowUsable }
+  return { ok: flowUsable, viaFlow: flowUsable, viaCreds: false, commodity: false }
 }
 
-export function crossReason(c: Conduit, eff: Effective, inputs: Inputs, viaFlow: boolean): string {
+export function crossReason(c: Conduit, eff: Effective, inputs: Inputs, viaFlow: boolean, viaCreds = false): string {
   let w: string
-  if (viaFlow) w = why.allowedFlow
+  if (viaCreds) w = why.credential
+  else if (viaFlow) w = why.allowedFlow
   else if (eff.legacy) w = why.legacy
   else if (eff.strength === 0) w = inputs.architecture === 'vlans' ? why.vlanBroad : why.open
   else if (eff.strength === 1) w = why.filteredWeak
@@ -50,9 +58,10 @@ export function crossReason(c: Conduit, eff: Effective, inputs: Inputs, viaFlow:
   return crossText(c.from, c.to, eff.strength, w)
 }
 
-export function blockReason(c: Conduit, eff: Effective, inputs: Inputs): string {
+export function blockReason(c: Conduit, eff: Effective, inputs: Inputs, commodity = false): string {
   let w: string
-  if (eff.airgap) w = why.airgap
+  if (commodity) w = why.commodityNoLogic
+  else if (eff.airgap) w = why.airgap
   else if (c.to === 'SIS' && inputs.sisZone === 'dedicated') w = why.sisDedicated
   else if (eff.cloaked) w = why.cloaked
   else if (eff.strength === 3) w = why.blocked

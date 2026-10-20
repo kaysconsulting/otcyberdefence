@@ -21,7 +21,7 @@ export const SCENARIOS: Scenario[] = [
     facts: 'Phishing, stolen VPN credentials, breakers opened remotely; around 225,000 customers lost power.' },
   { id: 'triton', name: 'Triton', year: 2017, entries: ['phished_login'], capability: 3, target: 'SIS', targetLabel: 'Safety systems',
     facts: 'First known malware built to target safety instrumented systems.' },
-  { id: 'notpetya', name: 'NotPetya', year: 2017, entries: ['poisoned_update'], capability: 1, target: 'spread', targetLabel: 'Spread across the site',
+  { id: 'notpetya', name: 'NotPetya', year: 2017, entries: ['poisoned_update'], capability: 1, target: 'spread', targetLabel: 'Spread into operations',
     facts: "Spread through a software update; disrupted Maersk worldwide and Cadbury's Hobart factory." },
   { id: 'colonial', name: 'Colonial Pipeline', year: 2021, entries: ['stolen_remote_cred'], capability: 1, target: 'shutdown', targetLabel: 'Operational shutdown',
     facts: 'Leaked password on a legacy VPN account without MFA; pipeline shut down for days; US$4.4m ransom paid.' },
@@ -51,10 +51,20 @@ export function runScenario(rawInputs: Inputs, id: ScenarioId): ScenarioResult {
   }
 
   if (sc.target === 'spread') {
-    const spread = path.some((p) => p.kind === 'cross') || runs.some((r) => r.reachedAssetIds.length > r.entryZones.length)
-    if (spread) return { ...base, succeeded: true, reason: scenarioReason.spread }
-    const stoppedAt = runs.flatMap((r) => r.blocked)[0]
-    return { ...base, succeeded: false, reason: stoppedAt ? `${scenarioReason.contained} ${stoppedAt.reason}` : scenarioReason.contained, stoppedAt }
+    // NotPetya's damage to operations came from spreading out of IT into OT. Success = reaching operations.
+    const OPS: ZoneId[] = ['L3', 'L2', 'L1', 'SIS']
+    if (reachedZones.some((z) => OPS.includes(z))) return { ...base, succeeded: true, reason: scenarioReason.intoOps }
+    const stoppedAt = runs.flatMap((r) => r.blocked).find((b) => OPS.includes(b.to))
+    return {
+      ...base,
+      succeeded: false,
+      reason: stoppedAt ? `${scenarioReason.keptOutOfOps} ${stoppedAt.reason}` : scenarioReason.keptOutOfOps,
+      stoppedAt,
+    }
+  }
+
+  if (sc.target === 'SIS' && reachedZones.includes('SIS') && inputs.sisKeySwitch === 'run') {
+    return { ...base, succeeded: false, reason: scenarioReason.sisKeySwitch }
   }
 
   if (reachedZones.includes(sc.target)) return { ...base, succeeded: true, reason: scenarioReason.reached(sc.target) }

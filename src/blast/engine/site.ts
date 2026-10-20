@@ -29,13 +29,14 @@ export function buildSite(inputs: Inputs): Site {
   }
 
   const conduits: Conduit[] = []
-  const add = (a: ZoneId, b: ZoneId, s: Strength, allowedFlow?: string) => {
-    conduits.push({ from: a, to: b, strength: s, allowedFlow }, { from: b, to: a, strength: s, allowedFlow })
+  const add = (a: ZoneId, b: ZoneId, s: Strength, allowedFlow?: string, remoteFlow?: boolean) => {
+    conduits.push({ from: a, to: b, strength: s, allowedFlow, remoteFlow }, { from: b, to: a, strength: s, allowedFlow, remoteFlow })
   }
 
   if (dmz) {
     add('L4', 'L35', 2)
-    add('L35', 'L3', 2)
+    // The DMZ jump host is permitted to open remote sessions into site operations.
+    add('L35', 'L3', 2, undefined, true)
     // A direct IT/OT firewall path bypassing the DMZ is only "filtered"; otherwise traffic must go via the DMZ.
     add('L4', 'L3', inputs.itOtLink === 'direct' ? 1 : 3)
   } else {

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useReducer, useRef, useState, type FormEvent } from 'react'
 import { Link } from 'react-router-dom'
-import type { EntryId, FixId, Inputs, ScenarioId, ZoneId } from '../blast/engine/types.ts'
+import type { Capability, EntryId, FixId, Inputs, ScenarioId, ZoneId } from '../blast/engine/types.ts'
 import { DEFAULT_INPUTS, normalise, onArchitectureChange } from '../blast/engine/inputs.ts'
 import { ALL_ENTRIES, worstCase } from '../blast/engine/simulate.ts'
 import { runScenario, SCENARIOS } from '../blast/engine/scenarios.ts'
@@ -9,16 +9,20 @@ import * as C from '../blast/content/copy.ts'
 import SiteDiagram from '../blast/ui/SiteDiagram.tsx'
 import { Banners, PathList, ReachCounts, ScoreBadge } from '../blast/ui/parts.tsx'
 import { track } from '../blast/analytics.ts'
+import CompliancePanel from '../blast/ui/Compliance.tsx'
+import { complianceGaps, FIX_ADDRESSES } from '../blast/engine/compliance.ts'
 import { img } from '../media.ts'
 
 type Step = 0 | 1 | 2 | 3 | 4 | 5
 const STEPS = ['Build your site', 'Your blast radius', 'Replay real attacks', 'Compare fixes', 'Free review']
 
-type State = { step: Step; inputs: Inputs; fixes: FixId[] }
+type State = { step: Step; inputs: Inputs; fixes: FixId[]; capability: Capability; wantLatest: boolean }
 type Action =
   | { t: 'step'; step: Step }
   | { t: 'set'; key: keyof Inputs; value: Inputs[keyof Inputs] }
   | { t: 'toggleFix'; fix: FixId }
+  | { t: 'capability'; capability: Capability }
+  | { t: 'wantLatest' }
 
 function reducer(s: State, a: Action): State {
   switch (a.t) {
@@ -29,6 +33,10 @@ function reducer(s: State, a: Action): State {
       return { ...s, inputs: normalise({ ...s.inputs, [a.key]: a.value } as Inputs) }
     case 'toggleFix':
       return { ...s, fixes: s.fixes.includes(a.fix) ? s.fixes.filter((f) => f !== a.fix) : [...s.fixes, a.fix] }
+    case 'capability':
+      return { ...s, capability: a.capability }
+    case 'wantLatest':
+      return { ...s, wantLatest: true, step: 5 }
   }
 }
 
@@ -37,7 +45,7 @@ const FORM_API = 'https://ash-be-z3x4.onrender.com/api/tickets/send-form-submiss
 const REVIEW_TO = 'admin@otcyberdefence.com.au'
 
 export default function BlastRadius() {
-  const [s, dispatch] = useReducer(reducer, { step: 0, inputs: DEFAULT_INPUTS, fixes: [] })
+  const [s, dispatch] = useReducer(reducer, { step: 0, inputs: DEFAULT_INPUTS, fixes: [], capability: 2, wantLatest: false })
   const go = (step: Step) => {
     dispatch({ t: 'step', step })
     // Land at the top of the step, below the sticky header.
@@ -49,9 +57,13 @@ export default function BlastRadius() {
     document.title = 'OT Blast Radius | OT Cyber Defence'
   }, [])
 
-  const main = useMemo(() => worstCase(s.inputs), [s.inputs])
+  const main = useMemo(() => worstCase(s.inputs, s.capability), [s.inputs, s.capability])
   const fixedInputs = useMemo(() => applyFixes(s.inputs, s.fixes), [s.inputs, s.fixes])
-  const fixed = useMemo(() => worstCase(fixedInputs), [fixedInputs])
+  const fixed = useMemo(() => worstCase(fixedInputs, s.capability), [fixedInputs, s.capability])
+  const setCap = (capability: Capability) => {
+    track('attacker_changed', { capability })
+    dispatch({ t: 'capability', capability })
+  }
 
   useEffect(() => {
     if (s.step === 2) track('results_viewed', { band: main.worst.band })
@@ -91,8 +103,19 @@ export default function BlastRadius() {
             <>
               <Progress step={s.step} go={go} />
               {s.step === 1 && <Build inputs={s.inputs} set={(key, value) => dispatch({ t: 'set', key, value })} next={() => go(2)} />}
-              {s.step === 2 && <Results data={main} next={() => go(3)} back={() => go(1)} />}
-              {s.step === 3 && <Replay inputs={s.inputs} next={() => go(4)} back={() => go(2)} />}
+              {s.step === 2 && <Results data={main} inputs={s.inputs} capability={s.capability} setCap={setCap} next={() => go(3)} back={() => go(1)} />}
+              {s.step === 3 && (
+                <Replay
+                  inputs={s.inputs}
+                  next={() => go(4)}
+                  back={() => go(2)}
+                  latest={() => {
+                    track('latest_attacks_requested')
+                    dispatch({ t: 'wantLatest' })
+                    window.scrollTo({ top: Math.max(0, (document.getElementById('br-top')?.offsetTop ?? 0) - 90), behavior: 'auto' })
+                  }}
+                />
+              )}
               {s.step === 4 && (
                 <Compare
                   inputs={s.inputs}
@@ -104,11 +127,13 @@ export default function BlastRadius() {
                   current={main.worst}
                   withFixes={fixed.worst}
                   fixedInputs={fixedInputs}
+                  capability={s.capability}
+                  setCap={setCap}
                   next={() => go(5)}
                   back={() => go(3)}
                 />
               )}
-              {s.step === 5 && <Offer inputs={s.inputs} fixes={s.fixes} current={main.worst} withFixes={fixed.worst} back={() => go(4)} />}
+              {s.step === 5 && <Offer inputs={s.inputs} fixes={s.fixes} current={main.worst} withFixes={fixed.worst} wantLatest={s.wantLatest} back={() => go(4)} />}
             </>
           )}
         </div>
@@ -227,13 +252,14 @@ function Build({ inputs, set, next }: { inputs: Inputs; set: (k: keyof Inputs, v
 }
 
 /* ---------------- Step 2: results ---------------- */
-function Results({ data, next, back }: { data: ReturnType<typeof worstCase>; next: () => void; back: () => void }) {
+function Results({ data, inputs, capability, setCap, next, back }: { data: ReturnType<typeof worstCase>; inputs: Inputs; capability: Capability; setCap: (c: Capability) => void; next: () => void; back: () => void }) {
   const [view, setView] = useState<'worst' | EntryId>('worst')
   const r = view === 'worst' ? data.worst : data.runs.find((x) => x.entry === view)!
   return (
     <div>
       <span className="eyebrow">{C.results.eyebrow}</span>
-      <h2>How far one way in gets on your site</h2>
+      <h2>{C.results.heading}</h2>
+      <AttackerPicker value={capability} onChange={setCap} />
       <div className="br-tabs" role="tablist">
         <button role="tab" aria-selected={view === 'worst'} className={view === 'worst' ? 'on' : ''} onClick={() => setView('worst')}>
           {C.results.worstCase}
@@ -247,11 +273,12 @@ function Results({ data, next, back }: { data: ReturnType<typeof worstCase>; nex
       <div className="br-result">
         <div className="br-summary">
           <ScoreBadge score={r.exposureScore} band={r.band} />
+          <StepsToControl n={r.stepsToControl} />
           <p className="br-entry-line">
             <b>Way in:</b> {C.ENTRY_NAMES[r.entry]}. {r.entryReason}
           </p>
           <Banners r={r} />
-          <h3>What an attacker reaches</h3>
+          <h3>{C.results.reachHeading}</h3>
           <ReachCounts r={r} />
           <details className="br-details">
             <summary>{C.results.showPath}</summary>
@@ -263,6 +290,7 @@ function Results({ data, next, back }: { data: ReturnType<typeof worstCase>; nex
           <Legend />
         </div>
       </div>
+      <CompliancePanel inputs={inputs} runs={data.runs} />
       <p className="fine">{C.disclaimer}</p>
       <div className="br-nav">
         <button className="btn btn-line-b" onClick={back}>
@@ -276,17 +304,42 @@ function Results({ data, next, back }: { data: ReturnType<typeof worstCase>; nex
   )
 }
 
+function AttackerPicker({ value, onChange }: { value: Capability; onChange: (c: Capability) => void }) {
+  return (
+    <div className="br-attacker">
+      <span>Attacker:</span>
+      <div className="br-opts" role="radiogroup" aria-label="Attacker">
+        {C.attackers.map((a) => (
+          <button key={a.value} role="radio" aria-checked={value === a.value} className={value === a.value ? 'on' : ''} onClick={() => onChange(a.value)}>
+            <b>{a.label}</b>
+            <span>{a.hint}</span>
+          </button>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+function StepsToControl({ n }: { n: number | null }) {
+  return (
+    <p className={`br-steps${n === null ? ' ok' : ''}`} title={C.results.stepsHelp}>
+      <b>{C.results.steps(n)}</b>
+      <span>{C.results.stepsHelp}</span>
+    </p>
+  )
+}
+
 function Legend() {
   return (
     <ul className="br-legend">
       <li>
-        <i className="lg-hit" /> Reached
+        <i className="lg-hit" /> {C.results.state.hit}
       </li>
       <li>
-        <i className="lg-safe" /> Safe
+        <i className="lg-safe" /> {C.results.state.safe}
       </li>
       <li>
-        <i className="lg-block" /> No access
+        <i className="lg-block" /> {C.results.state.blocked}
       </li>
       <li>
         <i className="lg-entry" /> Entry point
@@ -296,7 +349,7 @@ function Legend() {
 }
 
 /* ---------------- Step 3: replay ---------------- */
-function Replay({ inputs, next, back }: { inputs: Inputs; next: () => void; back: () => void }) {
+function Replay({ inputs, next, back, latest }: { inputs: Inputs; next: () => void; back: () => void; latest: () => void }) {
   const [id, setId] = useState<ScenarioId | null>(null)
   const [shown, setShown] = useState(0)
   const timer = useRef<number | undefined>(undefined)
@@ -331,7 +384,7 @@ function Replay({ inputs, next, back }: { inputs: Inputs; next: () => void; back
     <div>
       <span className="eyebrow">Step 3 · OT Threat Files</span>
       <h2>Replay real attacks against your site</h2>
-      <p className="lead">Pick an attack. We replay how it worked against the layout you described.</p>
+      <p className="lead">Pick an attack. We replay how it worked against the layout you described and show the most likely outcome.</p>
       <div className="br-cards">
         {SCENARIOS.map((x) => (
           <button
@@ -348,6 +401,14 @@ function Replay({ inputs, next, back }: { inputs: Inputs; next: () => void; back
             <small>Target: {x.targetLabel}</small>
           </button>
         ))}
+        <div className="br-card br-latest">
+          <span className="tag">{C.latest.tag}</span>
+          <b>{C.latest.title}</b>
+          <span>{C.latest.body}</span>
+          <button className="btn btn-red" onClick={latest}>
+            {C.latest.cta}
+          </button>
+        </div>
       </div>
       {res && sc && site && (
         <div className="br-result">
@@ -356,13 +417,19 @@ function Replay({ inputs, next, back }: { inputs: Inputs; next: () => void; back
             <p className="br-facts">{sc.facts}</p>
             {done ? (
               <div className={`br-outcome ${res.succeeded ? 'bad' : 'ok'}`}>
-                <b>{res.succeeded ? 'Succeeded' : res.stoppedAt ? `Stopped at: ${C.ZONE_NAMES[res.stoppedAt.from]} → ${C.ZONE_NAMES[res.stoppedAt.to]}` : 'Stopped'}</b>
+                <b>
+                  {res.succeeded
+                    ? C.results.outcome.succeed
+                    : res.stoppedAt
+                      ? C.results.outcome.stoppedAt(C.ZONE_NAMES[res.stoppedAt.from], C.ZONE_NAMES[res.stoppedAt.to])
+                      : C.results.outcome.stopped}
+                </b>
                 <span>{res.reason}</span>
               </div>
             ) : (
               <div className="br-outcome">
-                <b>Replaying…</b>
-                <span>{shown > 0 ? `Reached ${C.ZONE_NAMES[order[shown - 1]].toLowerCase()}` : 'Getting in'}</span>
+                <b>{C.results.outcome.replaying}</b>
+                <span>{shown > 0 ? `Likely reaches ${C.ZONE_NAMES[order[shown - 1]].toLowerCase()}` : 'Trying the way in'}</span>
               </div>
             )}
             <details className="br-details">
@@ -401,19 +468,25 @@ function Replay({ inputs, next, back }: { inputs: Inputs; next: () => void; back
 
 /* ---------------- Step 4: compare fixes ---------------- */
 type R = ReturnType<typeof worstCase>['worst']
-function Compare(p: { inputs: Inputs; fixes: FixId[]; toggle: (f: FixId) => void; current: R; withFixes: R; fixedInputs: Inputs; next: () => void; back: () => void }) {
+function Compare(p: { inputs: Inputs; fixes: FixId[]; toggle: (f: FixId) => void; current: R; withFixes: R; fixedInputs: Inputs; capability: Capability; setCap: (c: Capability) => void; next: () => void; back: () => void }) {
   return (
     <div>
       <span className="eyebrow">Step 4</span>
       <h2>Compare fixes</h2>
-      <p className="lead">Switch fixes on and off. Your score and the six attacks update straight away.</p>
+      <p className="lead">Switch fixes on and off. The likely score and outcomes update straight away.</p>
+      <AttackerPicker value={p.capability} onChange={p.setCap} />
       <div className="br-result">
         <div className="br-summary">
           <div className="br-fixes">
             {FIX_ORDER.map((f) => (
               <label key={f} className={p.fixes.includes(f) ? 'on' : ''}>
                 <input type="checkbox" checked={p.fixes.includes(f)} onChange={() => p.toggle(f)} />
-                {C.fixes[f]}
+                <span>
+                  {C.fixes[f]}
+                  <small>
+                    {C.compliance.addresses} {FIX_ADDRESSES[f].map((g) => C.compliance.short[g]).join(', ')}
+                  </small>
+                </span>
               </label>
             ))}
           </div>
@@ -428,6 +501,10 @@ function Compare(p: { inputs: Inputs; fixes: FixId[]; toggle: (f: FixId) => void
             </div>
           </div>
           <Banners r={p.withFixes} />
+          <p className="br-gapcount">
+            Compliance gaps: <b>{complianceGaps(p.inputs, worstCase(p.inputs, p.capability).runs).length}</b> today →{' '}
+            <b>{complianceGaps(p.fixedInputs, worstCase(p.fixedInputs, p.capability).runs).length}</b> with selected fixes
+          </p>
           <h3>The six attacks</h3>
           <table className="br-table">
             <thead>
@@ -444,8 +521,8 @@ function Compare(p: { inputs: Inputs; fixes: FixId[]; toggle: (f: FixId) => void
                 return (
                   <tr key={x.id}>
                     <td>{x.name}</td>
-                    <td className={a ? 'bad' : 'ok'}>{a ? 'Succeeds' : 'Stopped'}</td>
-                    <td className={b ? 'bad' : 'ok'}>{b ? 'Succeeds' : 'Stopped'}</td>
+                    <td className={a ? 'bad' : 'ok'}>{a ? C.results.outcome.cell.succeed : C.results.outcome.cell.stopped}</td>
+                    <td className={b ? 'bad' : 'ok'}>{b ? C.results.outcome.cell.succeed : C.results.outcome.cell.stopped}</td>
                   </tr>
                 )
               })}
@@ -494,7 +571,7 @@ function Compare(p: { inputs: Inputs; fixes: FixId[]; toggle: (f: FixId) => void
 }
 
 /* ---------------- Step 5: offer ---------------- */
-function Offer({ inputs, fixes, current, withFixes, back }: { inputs: Inputs; fixes: FixId[]; current: R; withFixes: R; back: () => void }) {
+function Offer({ inputs, fixes, current, withFixes, wantLatest, back }: { inputs: Inputs; fixes: FixId[]; current: R; withFixes: R; wantLatest: boolean; back: () => void }) {
   const [sent, setSent] = useState(false)
   const [busy, setBusy] = useState(false)
   const [err, setErr] = useState('')
@@ -513,6 +590,7 @@ function Offer({ inputs, fixes, current, withFixes, back }: { inputs: Inputs; fi
       `Sector: ${v('sector')}`,
       `State: ${v('state')}`,
       '',
+      d.get('latest') ? 'Requested: replay the latest OT attacks against their site in the review.' : '',
       v('message') || '(no message)',
       ...(settings ? ['', 'Blast Radius settings (shared by the visitor):', settings] : ['', 'Blast Radius settings: not shared']),
     ].join('\n')
@@ -641,6 +719,9 @@ function Offer({ inputs, fixes, current, withFixes, back }: { inputs: Inputs; fi
               <textarea name="message" rows={3} />
             </label>
             <label className="br-check">
+              <input type="checkbox" name="latest" defaultChecked={wantLatest} /> {C.latest.checkbox}
+            </label>
+            <label className="br-check">
               <input type="checkbox" name="include" /> {C.offer.includeSettings}
             </label>
             <p className="fine" style={{ marginTop: 0 }}>
@@ -685,13 +766,14 @@ function PrintSummary({ inputs, fixes, current, withFixes }: { inputs: Inputs; f
       <img src="/brand/otcd-logo.png" alt="" style={{ height: 60 }} />
       <h1>OT Blast Radius summary</h1>
       <p>Prepared {new Date().toLocaleDateString('en-AU', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
-      <h2>Exposure score</h2>
+      <h2>Exposure estimate</h2>
+      <p>Attacker: {C.attackers.find((a) => a.value === current.capability)?.label} · {C.results.steps(current.stepsToControl)}</p>
       <p>
         Today: <b>{current.exposureScore}</b> ({current.band}) · With selected fixes: <b>{withFixes.exposureScore}</b> ({withFixes.band})
       </p>
-      {current.sisReached && <p>{C.results.sisBanner}</p>}
+      {current.sisLogicChangeable ? <p>{C.results.sisBanner}</p> : current.sisReached ? <p>{C.results.sisNetworkOnly}</p> : null}
       {current.l1Reached && <p>{C.results.l1Banner}</p>}
-      <h2>Worst-case attack path today</h2>
+      <h2>Likely worst-case attack path today</h2>
       <p>Way in: {C.ENTRY_NAMES[current.entry]}</p>
       <ol>
         {current.path.map((x, k) => (
@@ -701,7 +783,7 @@ function PrintSummary({ inputs, fixes, current, withFixes }: { inputs: Inputs; f
           <li key={`b${k}`}>{x.reason}</li>
         ))}
       </ol>
-      <h2>Real attacks replayed</h2>
+      <h2>Real attacks replayed (likely outcomes)</h2>
       <table>
         <tbody>
           {SCENARIOS.map((x) => (
@@ -709,12 +791,21 @@ function PrintSummary({ inputs, fixes, current, withFixes }: { inputs: Inputs; f
               <td>
                 {x.name} ({x.year})
               </td>
-              <td>{runScenario(inputs, x.id).succeeded ? 'Succeeds today' : 'Stopped today'}</td>
-              <td>{runScenario(applyFixes(inputs, fixes), x.id).succeeded ? 'Succeeds with fixes' : 'Stopped with fixes'}</td>
+              <td>{runScenario(inputs, x.id).succeeded ? 'Likely succeeds today' : 'Likely stopped today'}</td>
+              <td>{runScenario(applyFixes(inputs, fixes), x.id).succeeded ? 'Likely succeeds with fixes' : 'Likely stopped with fixes'}</td>
             </tr>
           ))}
         </tbody>
       </table>
+      <h2>Compliance areas this is likely to touch</h2>
+      <ul>
+        {complianceGaps(inputs, worstCase(inputs, current.capability).runs).map((g) => (
+          <li key={g.id}>
+            <b>{g.title}</b> (CIRMP: {g.cirmp}). {g.refs.join(' · ')}
+          </li>
+        ))}
+      </ul>
+      <p>{C.compliance.reporting}</p>
       <h2>Fixes selected</h2>
       <p>{fixes.length ? fixes.map((f) => C.fixes[f]).join(' · ') : 'None selected'}</p>
       <h2>Site described</h2>

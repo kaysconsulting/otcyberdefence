@@ -12,6 +12,7 @@ export const DEFAULT_INPUTS: Inputs = {
   removableMedia: 'uncontrolled',
   sisZone: 'shared',
   itOtLink: 'direct',
+  sisKeySwitch: 'program',
 }
 
 /** Validation rules (spec 6.2). A flat network forces a direct IT/OT link. */

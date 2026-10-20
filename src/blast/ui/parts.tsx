@@ -14,10 +14,11 @@ export function ScoreBadge({ score, band }: { score: number; band: SimResult['ba
   )
 }
 
-export function Banners({ r }: { r: Pick<SimResult, 'sisReached' | 'l1Reached'> }) {
+export function Banners({ r }: { r: Pick<SimResult, 'sisReached' | 'sisLogicChangeable' | 'l1Reached'> }) {
   return (
     <>
-      {r.sisReached && <div className="br-banner br-banner-red">{R.sisBanner}</div>}
+      {r.sisLogicChangeable && <div className="br-banner br-banner-red">{R.sisBanner}</div>}
+      {r.sisReached && !r.sisLogicChangeable && <div className="br-banner br-banner-amber">{R.sisNetworkOnly}</div>}
       {r.l1Reached && <div className="br-banner">{R.l1Banner}</div>}
     </>
   )
@@ -49,19 +50,19 @@ export function PathList({ path, blocked, entryReason, entrySucceeded }: { path:
     <ol className="br-path">
       {!entrySucceeded && (
         <li className="br-step-block">
-          <span className="br-tag">Entry failed</span>
+          <span className="br-tag">{R.tags.entryFailed}</span>
           {entryReason}
         </li>
       )}
       {path.map((p, k) => (
         <li key={k} className={`br-step-${p.kind}`}>
-          <span className="br-tag">{p.kind === 'entry' ? 'Entry' : p.kind === 'cross' ? 'Crossed' : 'Inside zone'}</span>
+          <span className="br-tag">{p.kind === 'entry' ? R.tags.entry : p.kind === 'cross' ? R.tags.cross : R.tags.spread}</span>
           {p.reason}
         </li>
       ))}
       {blocked.map((b, k) => (
         <li key={`b${k}`} className="br-step-block">
-          <span className="br-tag">Stopped</span>
+          <span className="br-tag">{R.tags.stopped}</span>
           {b.reason}
         </li>
       ))}

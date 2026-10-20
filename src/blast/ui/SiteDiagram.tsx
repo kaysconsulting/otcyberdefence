@@ -1,5 +1,5 @@
 import type { BlockedStep, Site, ZoneId } from '../engine/types.ts'
-import { STRENGTH_NAMES, ZONE_NAMES, ZONE_SHORT } from '../content/copy.ts'
+import { results as R, STRENGTH_NAMES, ZONE_NAMES, ZONE_SHORT } from '../content/copy.ts'
 
 const ROWS: ZoneId[] = ['L4', 'L35', 'L3', 'L2', 'L1', 'SIS']
 const W = 820
@@ -63,9 +63,13 @@ export default function SiteDiagram({ site, reached, entryZones, blocked, active
                       {a.label}
                     </text>
                     <text x={x + boxW / 2} y={y + ROW_H / 2 + 14} textAnchor="middle" className={`br-asset-state br-${state}-t`}>
-                      {hit ? 'Reached' : state === 'blocked' ? 'No access' : 'Safe'}
-                      {a.legacy ? ' · legacy' : ''}
+                      {hit ? R.state.hit : state === 'blocked' ? R.state.blocked : R.state.safe}
                     </text>
+                    {a.legacy && (
+                      <text x={x + boxW - 6} y={y + 12} textAnchor="end" className="br-legacy-tag">
+                        LEGACY
+                      </text>
+                    )}
                   </g>
                 )
               })
