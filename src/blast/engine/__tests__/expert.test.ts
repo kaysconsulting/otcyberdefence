@@ -113,8 +113,40 @@ describe('probabilistic wording', () => {
     const sites: Inputs[] = [D, purdue, micro, { ...D, architecture: 'flat' }, { ...D, itOtLink: 'airgap_claimed' }]
     for (const i of sites)
       for (const r of worstCase(i, 2).runs) {
-        r.path.filter((p) => p.kind !== 'entry').forEach((p) => expect(p.reason).toMatch(/^Likely/))
+        r.path.filter((p) => p.kind !== 'entry').forEach((p) => expect(p.reason).toMatch(/^(Likely|Could|Unlikely)/))
         r.blocked.forEach((b) => expect(b.reason).toMatch(/^Likely/))
       }
+  })
+})
+
+describe('graded likelihood', () => {
+  const dedicated: Inputs = { ...purdue, sisZone: 'dedicated' }
+  const cloaked: Inputs = { ...micro, visibility: 'cloaked' }
+
+  it('a nation-state attacker is not an automatic 100 on segmented sites', () => {
+    for (const i of [purdue, micro, dedicated, cloaked]) expect(worstCase(i, 3).worst.exposureScore).toBeLessThan(100)
+  })
+
+  it('beating a controlled conduit by one level is unlikely, but possible, and counted at reduced weight', () => {
+    const r = worstCase(purdue, 3).worst
+    const unlikely = Object.values(r.zoneLikelihood).filter((l) => l !== 'likely')
+    expect(unlikely.length).toBeGreaterThan(0)
+    // Weighted score is below the plain share of criticality reached.
+    const total = r.site.assets.reduce((s, a) => s + a.criticality, 0)
+    const plain = Math.round((r.site.assets.filter((a) => r.reachedAssetIds.includes(a.id)).reduce((s, a) => s + a.criticality, 0) / total) * 100)
+    expect(r.exposureScore).toBeLessThan(plain)
+  })
+
+  it('an open, flat site is still likely to be fully reached', () => {
+    const r = worstCase({ ...D, architecture: 'flat' }, 2).worst
+    expect(Object.values(r.zoneLikelihood).every((l) => l === 'likely')).toBe(true)
+  })
+
+  it('more capable attackers are never less likely to reach a zone', () => {
+    for (const i of [D, purdue, micro, dedicated]) {
+      const a = worstCase(i, 2).worst.exposureScore
+      const b = worstCase(i, 3).worst.exposureScore
+      expect(b).toBeGreaterThanOrEqual(a)
+    }
   })
 })

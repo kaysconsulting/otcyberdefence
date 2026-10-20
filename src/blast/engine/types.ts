@@ -1,6 +1,8 @@
 export type ZoneId = 'L4' | 'L35' | 'L3' | 'L2' | 'L1' | 'SIS'
 export type Strength = 0 | 1 | 2 | 3 // open, filtered, controlled, blocked
 export type Capability = 1 | 2 | 3
+/** How likely the attacker is to get somewhere: the weakest step on the best route decides it. */
+export type Likelihood = 'likely' | 'possible' | 'unlikely'
 
 export interface Inputs {
   architecture: 'flat' | 'vlans' | 'purdue_dmz' | 'microsegmented'
@@ -46,6 +48,7 @@ export interface PathStep {
   from?: ZoneId
   to: ZoneId
   reason: string
+  likelihood?: Likelihood
 }
 
 export interface BlockedStep {
@@ -63,6 +66,9 @@ export interface SimResult {
   entryZones: ZoneId[]
   reachedAssetIds: string[]
   reachedZones: ZoneId[]
+  /** Likelihood of reaching each zone / asset group (absent = not reached). */
+  zoneLikelihood: Partial<Record<ZoneId, Likelihood>>
+  assetLikelihood: Record<string, Likelihood>
   path: PathStep[]
   blocked: BlockedStep[]
   exposureScore: number
@@ -84,6 +90,8 @@ export type ScenarioId = 'stuxnet' | 'ukraine2015' | 'triton' | 'notpetya' | 'co
 export interface ScenarioResult {
   id: ScenarioId
   succeeded: boolean
+  /** How likely success is, when it can succeed at all. */
+  likelihood?: Likelihood
   reason: string
   stoppedAt?: BlockedStep
   runs: SimResult[]

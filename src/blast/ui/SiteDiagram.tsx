@@ -1,4 +1,4 @@
-import type { BlockedStep, Site, ZoneId } from '../engine/types.ts'
+import type { BlockedStep, Likelihood, Site, ZoneId } from '../engine/types.ts'
 import { results as R, STRENGTH_NAMES, ZONE_NAMES, ZONE_SHORT } from '../content/copy.ts'
 
 const ROWS: ZoneId[] = ['L4', 'L35', 'L3', 'L2', 'L1', 'SIS']
@@ -13,10 +13,12 @@ type Props = {
   entryZones: ZoneId[]
   blocked: BlockedStep[]
   activeZone?: ZoneId | null
+  /** How likely each reached asset is to be reached; absent means likely. */
+  likelihood?: Record<string, Likelihood>
 }
 
 /** Purdue-style site diagram: reached assets in red, safe in white, entry point in navy, blocked dashed. */
-export default function SiteDiagram({ site, reached, entryZones, blocked, activeZone }: Props) {
+export default function SiteDiagram({ site, reached, entryZones, blocked, activeZone, likelihood }: Props) {
   const reachedSet = new Set(reached)
   const blockedInto = new Set(blocked.map((b) => b.to))
   const H = ROWS.length * (ROW_H + GAP) - GAP + 20
@@ -54,7 +56,8 @@ export default function SiteDiagram({ site, reached, entryZones, blocked, active
             ) : (
               assets.map((a, k) => {
                 const hit = reachedSet.has(a.id)
-                const state = hit ? 'hit' : blockedInto.has(z) ? 'blocked' : 'safe'
+                const lik = likelihood?.[a.id] ?? 'likely'
+                const state = hit ? (lik === 'likely' ? 'hit' : lik) : blockedInto.has(z) ? 'blocked' : 'safe'
                 const x = LABEL + k * (boxW + 8)
                 return (
                   <g key={a.id}>
@@ -63,7 +66,7 @@ export default function SiteDiagram({ site, reached, entryZones, blocked, active
                       {a.label}
                     </text>
                     <text x={x + boxW / 2} y={y + ROW_H / 2 + 14} textAnchor="middle" className={`br-asset-state br-${state}-t`}>
-                      {hit ? R.state.hit : state === 'blocked' ? R.state.blocked : R.state.safe}
+                      {R.state[state]}
                     </text>
                     {a.legacy && (
                       <text x={x + boxW - 6} y={y + 12} textAnchor="end" className="br-legacy-tag">

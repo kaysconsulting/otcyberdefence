@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useReducer, useRef, useState, type FormEvent } from 'react'
 import { Link } from 'react-router-dom'
-import type { Capability, EntryId, FixId, Inputs, ScenarioId, ZoneId } from '../blast/engine/types.ts'
+import type { Capability, EntryId, FixId, Inputs, Likelihood, ScenarioId, ScenarioResult, ZoneId } from '../blast/engine/types.ts'
 import { DEFAULT_INPUTS, normalise, onArchitectureChange } from '../blast/engine/inputs.ts'
-import { ALL_ENTRIES, worstCase } from '../blast/engine/simulate.ts'
+import { ALL_ENTRIES, mergeAssetLikelihood, worstCase } from '../blast/engine/simulate.ts'
 import { runScenario, SCENARIOS } from '../blast/engine/scenarios.ts'
 import { applyFixes, FIX_ORDER } from '../blast/engine/fixes.ts'
 import * as C from '../blast/content/copy.ts'
@@ -286,7 +286,7 @@ function Results({ data, inputs, capability, setCap, next, back }: { data: Retur
           </details>
         </div>
         <div className="br-diagram-wrap">
-          <SiteDiagram site={r.site} reached={r.reachedAssetIds} entryZones={r.entrySucceeded ? r.entryZones : []} blocked={r.blocked} />
+          <SiteDiagram site={r.site} reached={r.reachedAssetIds} likelihood={r.assetLikelihood} entryZones={r.entrySucceeded ? r.entryZones : []} blocked={r.blocked} />
           <Legend />
         </div>
       </div>
@@ -329,11 +329,31 @@ function StepsToControl({ n }: { n: number | null }) {
   )
 }
 
+function outcomeLabel(l?: Likelihood) {
+  return l === 'possible' ? C.results.outcome.possible : l === 'unlikely' ? C.results.outcome.unlikely : C.results.outcome.succeed
+}
+
+function cellLabel(r: ScenarioResult) {
+  const c = C.results.outcome.cell
+  if (!r.succeeded) return c.stopped
+  return r.likelihood === 'possible' ? c.possible : r.likelihood === 'unlikely' ? c.unlikely : c.succeed
+}
+
+function cellClass(r: ScenarioResult) {
+  return !r.succeeded ? 'ok' : r.likelihood === 'unlikely' ? 'warn' : 'bad'
+}
+
 function Legend() {
   return (
     <ul className="br-legend">
       <li>
         <i className="lg-hit" /> {C.results.state.hit}
+      </li>
+      <li>
+        <i className="lg-possible" /> {C.results.state.possible}
+      </li>
+      <li>
+        <i className="lg-unlikely" /> {C.results.state.unlikely}
       </li>
       <li>
         <i className="lg-safe" /> {C.results.state.safe}
@@ -416,10 +436,10 @@ function Replay({ inputs, next, back, latest }: { inputs: Inputs; next: () => vo
             <h3>{sc.name}</h3>
             <p className="br-facts">{sc.facts}</p>
             {done ? (
-              <div className={`br-outcome ${res.succeeded ? 'bad' : 'ok'}`}>
+              <div className={`br-outcome ${res.succeeded ? (res.likelihood === 'unlikely' ? 'warn' : 'bad') : 'ok'}`}>
                 <b>
                   {res.succeeded
-                    ? C.results.outcome.succeed
+                    ? outcomeLabel(res.likelihood)
                     : res.stoppedAt
                       ? C.results.outcome.stoppedAt(C.ZONE_NAMES[res.stoppedAt.from], C.ZONE_NAMES[res.stoppedAt.to])
                       : C.results.outcome.stopped}
@@ -449,6 +469,7 @@ function Replay({ inputs, next, back, latest }: { inputs: Inputs; next: () => vo
               entryZones={[...new Set(res.runs.filter((r) => r.entrySucceeded).flatMap((r) => r.entryZones))]}
               blocked={done ? res.runs.flatMap((r) => r.blocked) : []}
               activeZone={done ? null : order[shown - 1]}
+              likelihood={mergeAssetLikelihood(res.runs)}
             />
             <Legend />
           </div>
@@ -516,13 +537,13 @@ function Compare(p: { inputs: Inputs; fixes: FixId[]; toggle: (f: FixId) => void
             </thead>
             <tbody>
               {SCENARIOS.map((x) => {
-                const a = runScenario(p.inputs, x.id).succeeded
-                const b = runScenario(p.fixedInputs, x.id).succeeded
+                const a = runScenario(p.inputs, x.id)
+                const b = runScenario(p.fixedInputs, x.id)
                 return (
                   <tr key={x.id}>
                     <td>{x.name}</td>
-                    <td className={a ? 'bad' : 'ok'}>{a ? C.results.outcome.cell.succeed : C.results.outcome.cell.stopped}</td>
-                    <td className={b ? 'bad' : 'ok'}>{b ? C.results.outcome.cell.succeed : C.results.outcome.cell.stopped}</td>
+                    <td className={cellClass(a)}>{cellLabel(a)}</td>
+                    <td className={cellClass(b)}>{cellLabel(b)}</td>
                   </tr>
                 )
               })}
@@ -530,7 +551,7 @@ function Compare(p: { inputs: Inputs; fixes: FixId[]; toggle: (f: FixId) => void
           </table>
         </div>
         <div className="br-diagram-wrap">
-          <SiteDiagram site={p.withFixes.site} reached={p.withFixes.reachedAssetIds} entryZones={p.withFixes.entrySucceeded ? p.withFixes.entryZones : []} blocked={p.withFixes.blocked} />
+          <SiteDiagram site={p.withFixes.site} reached={p.withFixes.reachedAssetIds} likelihood={p.withFixes.assetLikelihood} entryZones={p.withFixes.entrySucceeded ? p.withFixes.entryZones : []} blocked={p.withFixes.blocked} />
           <Legend />
         </div>
       </div>
@@ -772,7 +793,8 @@ function PrintSummary({ inputs, fixes, current, withFixes }: { inputs: Inputs; f
         Today: <b>{current.exposureScore}</b> ({current.band}) · With selected fixes: <b>{withFixes.exposureScore}</b> ({withFixes.band})
       </p>
       {current.sisLogicChangeable ? <p>{C.results.sisBanner}</p> : current.sisReached ? <p>{C.results.sisNetworkOnly}</p> : null}
-      {current.l1Reached && <p>{C.results.l1Banner}</p>}
+      {current.l1Reached && <p>{current.zoneLikelihood.L1 === 'unlikely' ? C.results.l1Unlikely : C.results.l1Banner}</p>}
+      <p>{C.results.likelihoodNote}</p>
       <h2>Likely worst-case attack path today</h2>
       <p>Way in: {C.ENTRY_NAMES[current.entry]}</p>
       <ol>
@@ -791,8 +813,8 @@ function PrintSummary({ inputs, fixes, current, withFixes }: { inputs: Inputs; f
               <td>
                 {x.name} ({x.year})
               </td>
-              <td>{runScenario(inputs, x.id).succeeded ? 'Likely succeeds today' : 'Likely stopped today'}</td>
-              <td>{runScenario(applyFixes(inputs, fixes), x.id).succeeded ? 'Likely succeeds with fixes' : 'Likely stopped with fixes'}</td>
+              <td>Today: {cellLabel(runScenario(inputs, x.id))}</td>
+              <td>With fixes: {cellLabel(runScenario(applyFixes(inputs, fixes), x.id))}</td>
             </tr>
           ))}
         </tbody>
