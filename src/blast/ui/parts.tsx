@@ -14,12 +14,14 @@ export function ScoreBadge({ score, band }: { score: number; band: SimResult['ba
   )
 }
 
-export function Banners({ r }: { r: Pick<SimResult, 'sisReached' | 'sisLogicChangeable' | 'l1Reached'> }) {
+export function Banners({ r }: { r: Pick<SimResult, 'sisReached' | 'sisLogicChangeable' | 'l1Reached' | 'zoneLikelihood'> }) {
+  const sisUnlikely = r.zoneLikelihood.SIS === 'unlikely'
+  const l1Unlikely = r.zoneLikelihood.L1 === 'unlikely'
   return (
     <>
-      {r.sisLogicChangeable && <div className="br-banner br-banner-red">{R.sisBanner}</div>}
+      {r.sisLogicChangeable && <div className={`br-banner ${sisUnlikely ? 'br-banner-amber' : 'br-banner-red'}`}>{sisUnlikely ? R.sisUnlikely : R.sisBanner}</div>}
       {r.sisReached && !r.sisLogicChangeable && <div className="br-banner br-banner-amber">{R.sisNetworkOnly}</div>}
-      {r.l1Reached && <div className="br-banner">{R.l1Banner}</div>}
+      {r.l1Reached && <div className="br-banner">{l1Unlikely ? R.l1Unlikely : R.l1Banner}</div>}
     </>
   )
 }
@@ -32,8 +34,9 @@ export function ReachCounts({ r }: { r: SimResult }) {
       {ZONE_ORDER.filter((z) => r.site.zones.includes(z)).map((z) => {
         const all = r.site.assets.filter((a) => a.zone === z)
         const hit = all.filter((a) => r.reachedAssetIds.includes(a.id)).length
+        const lik = r.zoneLikelihood[z]
         return (
-          <li key={z} className={hit ? 'hit' : ''}>
+          <li key={z} className={hit ? `hit ${lik !== 'likely' ? lik : ''}` : ''} title={hit && lik ? R.state[lik === 'likely' ? 'hit' : lik] : undefined}>
             <b>
               {hit} of {all.length}
             </b>
@@ -55,8 +58,16 @@ export function PathList({ path, blocked, entryReason, entrySucceeded }: { path:
         </li>
       )}
       {path.map((p, k) => (
-        <li key={k} className={`br-step-${p.kind}`}>
-          <span className="br-tag">{p.kind === 'entry' ? R.tags.entry : p.kind === 'cross' ? R.tags.cross : R.tags.spread}</span>
+        <li key={k} className={`br-step-${p.kind}${p.likelihood && p.likelihood !== 'likely' ? ` br-step-${p.likelihood}` : ''}`}>
+          <span className="br-tag">{p.kind === 'entry'
+              ? R.tags.entry
+              : p.kind === 'cross'
+                ? p.likelihood === 'possible'
+                  ? R.tags.possible
+                  : p.likelihood === 'unlikely'
+                    ? R.tags.unlikely
+                    : R.tags.cross
+                : R.tags.spread}</span>
           {p.reason}
         </li>
       ))}

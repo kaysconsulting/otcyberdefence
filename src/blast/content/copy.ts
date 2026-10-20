@@ -195,8 +195,9 @@ export const entryReason = {
 }
 
 const S = STRENGTH_NAMES
-export const crossReason = (from: ZoneId, to: ZoneId, strength: number, why: string) =>
-  `Likely to cross from ${ZONE_NAMES[from].toLowerCase()} to ${ZONE_NAMES[to].toLowerCase()}: ${why} (${S[strength]} conduit).`
+const CROSS_PREFIX = { likely: 'Likely to cross', possible: 'Could cross', unlikely: 'Unlikely, but possible, to cross' } as const
+export const crossReason = (from: ZoneId, to: ZoneId, strength: number, why: string, lik: keyof typeof CROSS_PREFIX = 'likely') =>
+  `${CROSS_PREFIX[lik]} from ${ZONE_NAMES[from].toLowerCase()} to ${ZONE_NAMES[to].toLowerCase()}: ${why} (${S[strength]} conduit).`
 export const blockReason = (from: ZoneId, to: ZoneId, why: string) =>
   `Likely to stop between ${ZONE_NAMES[from].toLowerCase()} and ${ZONE_NAMES[to].toLowerCase()}: ${why}`
 
@@ -248,20 +249,27 @@ export const results = {
   sisNetworkOnly:
     'The safety network is likely within reach, but with key switches in run, safety logic is better protected. The controllers could still be disrupted.',
   l1Banner: 'An attacker could potentially change control logic.',
+  sisUnlikely:
+    'Reaching the safety systems is unlikely, but a highly capable attacker could possibly get there. Their logic could then potentially be changed.',
+  l1Unlikely: 'Reaching control systems is unlikely, but possible for a highly capable attacker.',
+  likelihoodNote:
+    'The score weights each asset group by how likely it is to be reached: likely counts fully, possible about 60% and unlikely about 30%.',
   showPath: 'Show the likely attack path',
   worstCase: 'Worst case across all entry points',
   steps: (n: number | null) =>
     n === null ? 'Control unlikely to be reached' : n === 0 ? 'Likely lands in control directly' : `Likely ${n} ${n === 1 ? 'step' : 'steps'} to reach control`,
   stepsHelp:
     'Roughly how many moves between zones an attacker would need before they could change control logic. Fewer steps usually means less chance to detect and stop them.',
-  state: { hit: 'Likely reached', safe: 'Likely safe', blocked: 'Likely blocked' },
-  tags: { entry: 'Way in', cross: 'Likely crosses', spread: 'Inside zone', stopped: 'Likely stopped', entryFailed: 'Way in unlikely' },
+  state: { hit: 'Likely reached', possible: 'Possibly reached', unlikely: 'Unlikely, but possible', safe: 'Likely safe', blocked: 'Likely blocked' },
+  tags: { entry: 'Way in', cross: 'Likely crosses', possible: 'Could cross', unlikely: 'Unlikely, possible', spread: 'Inside zone', stopped: 'Likely stopped', entryFailed: 'Way in unlikely' },
   outcome: {
     succeed: 'Likely to succeed',
+    possible: 'Could succeed',
+    unlikely: 'Unlikely, but possible',
     stoppedAt: (a: string, b: string) => `Likely stopped at: ${a} → ${b}`,
     stopped: 'Likely stopped',
     replaying: 'Replaying…',
-    cell: { succeed: 'Likely succeeds', stopped: 'Likely stopped' },
+    cell: { succeed: 'Likely succeeds', possible: 'Could succeed', unlikely: 'Unlikely, but possible', stopped: 'Likely stopped' },
   },
 }
 

@@ -1,5 +1,6 @@
-import type { Capability, EntryId, Inputs, ScenarioId, ScenarioResult, ZoneId } from './types.ts'
+import type { Capability, EntryId, Inputs, Likelihood, ScenarioId, ScenarioResult, SimResult, ZoneId } from './types.ts'
 import { simulate } from './simulate.ts'
+import { rankOf } from './conduits.ts'
 import { normalise } from './inputs.ts'
 import { scenarioReason } from '../content/copy.ts'
 
@@ -29,6 +30,17 @@ export const SCENARIOS: Scenario[] = [
     facts: 'Ports in Sydney, Melbourne, Brisbane and Fremantle paused for around three days; around 30,000 containers stranded.' },
 ]
 
+/** Most likely any run gets into one of the zones. */
+function bestLikelihood(runs: SimResult[], zones: ZoneId[]): Likelihood | undefined {
+  let best: Likelihood | undefined
+  for (const r of runs)
+    for (const z of zones) {
+      const l = r.zoneLikelihood[z]
+      if (l && (!best || rankOf(l) > rankOf(best))) best = l
+    }
+  return best
+}
+
 const intertwined = (i: Inputs) => i.itOtLink === 'direct' || i.architecture === 'flat' || i.architecture === 'vlans'
 
 /** Spec 8: replay a real attack against the visitor's layout. */
@@ -46,14 +58,14 @@ export function runScenario(rawInputs: Inputs, id: ScenarioId): ScenarioResult {
 
   if (sc.target === 'shutdown') {
     return intertwined(inputs)
-      ? { ...base, succeeded: true, reason: scenarioReason.intertwined }
+      ? { ...base, succeeded: true, likelihood: 'likely', reason: scenarioReason.intertwined }
       : { ...base, succeeded: false, reason: scenarioReason.separable }
   }
 
   if (sc.target === 'spread') {
     // NotPetya's damage to operations came from spreading out of IT into OT. Success = reaching operations.
     const OPS: ZoneId[] = ['L3', 'L2', 'L1', 'SIS']
-    if (reachedZones.some((z) => OPS.includes(z))) return { ...base, succeeded: true, reason: scenarioReason.intoOps }
+    if (reachedZones.some((z) => OPS.includes(z))) return { ...base, succeeded: true, likelihood: bestLikelihood(runs, OPS), reason: scenarioReason.intoOps }
     const stoppedAt = runs.flatMap((r) => r.blocked).find((b) => OPS.includes(b.to))
     return {
       ...base,
@@ -67,7 +79,7 @@ export function runScenario(rawInputs: Inputs, id: ScenarioId): ScenarioResult {
     return { ...base, succeeded: false, reason: scenarioReason.sisKeySwitch }
   }
 
-  if (reachedZones.includes(sc.target)) return { ...base, succeeded: true, reason: scenarioReason.reached(sc.target) }
+  if (reachedZones.includes(sc.target)) return { ...base, succeeded: true, likelihood: bestLikelihood(runs, [sc.target]), reason: scenarioReason.reached(sc.target) }
 
   // Stopped: prefer the conduit into the target itself, otherwise the deepest blocked conduit.
   const allBlocked = runs.flatMap((r) => r.blocked).filter((b) => !reachedZones.includes(b.to))
