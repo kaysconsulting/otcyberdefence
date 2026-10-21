@@ -14,12 +14,13 @@ export const sectors: { value: Sector; label: string; formLabel: string }[] = [
 ]
 
 type Names = { plc: string; rtu: string; hmi: string; sis: string }
+// Kept short: six control-level boxes share one row of the diagram.
 const NAMES: Record<Sector, Names> = {
-  water: { plc: 'Pump station PLC', rtu: 'Telemetry RTU', hmi: 'SCADA HMI group', sis: 'Dosing safety system' },
-  energy: { plc: 'Substation controller', rtu: 'Protection relay group', hmi: 'Control room HMI group', sis: 'Safety controller' },
-  rail: { plc: 'Signalling controller', rtu: 'Trackside RTU', hmi: 'Control centre HMI group', sis: 'Train protection system' },
-  ports: { plc: 'Crane PLC', rtu: 'Gate and yard RTU', hmi: 'Terminal HMI group', sis: 'Crane safety system' },
-  mining: { plc: 'Conveyor PLC', rtu: 'Remote site RTU', hmi: 'Control room HMI group', sis: 'Safety controller' },
+  water: { plc: 'Pump PLC', rtu: 'Telemetry RTU', hmi: 'SCADA HMI group', sis: 'Dosing safety system' },
+  energy: { plc: 'Substation PLC', rtu: 'Relay group', hmi: 'Control room HMI group', sis: 'Safety controller' },
+  rail: { plc: 'Signalling PLC', rtu: 'Trackside RTU', hmi: 'Control centre HMI group', sis: 'Train protection system' },
+  ports: { plc: 'Crane PLC', rtu: 'Yard RTU', hmi: 'Terminal HMI group', sis: 'Crane safety system' },
+  mining: { plc: 'Conveyor PLC', rtu: 'Site RTU', hmi: 'Control room HMI group', sis: 'Safety controller' },
   manufacturing: { plc: 'Line PLC', rtu: 'Utility RTU', hmi: 'Line HMI group', sis: 'Machine safety controller' },
   other: { plc: 'PLC group', rtu: 'RTU group', hmi: 'HMI group', sis: 'Safety controller' },
 }

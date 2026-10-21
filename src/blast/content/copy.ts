@@ -21,24 +21,50 @@ export const ZONE_SHORT: Record<ZoneId, string> = {
 }
 
 export const ENTRY_NAMES: Record<EntryId, string> = {
-  phished_login: 'A phished IT user login',
+  phished_login: 'A phished IT login',
   stolen_remote_cred: 'A stolen remote access login',
   infected_usb: 'An infected USB stick or visiting laptop',
-  poisoned_update: 'A malicious software update',
-  vendor_account: "A vendor's compromised account",
+  poisoned_update: 'A poisoned software update',
+  vendor_account: 'A compromised vendor account',
 }
 
 export const STRENGTH_NAMES = ['open', 'filtered', 'controlled', 'blocked'] as const
 
+/** The five steps, named once: used by the landing cards, progress bar, step labels and buttons. */
+export const STEP_NAMES = ['Build your site', 'Your blast radius', 'Replay real attacks', 'Plan step by step', 'Summary and review'] as const
+
 export const landing = {
   eyebrow: 'Free tool · OT Blast Radius',
   title: 'If an attacker got in, how far could they likely get on your site?',
-  sub: 'A phishing email, a stolen remote login, an infected USB stick, a poisoned software update or a vendor account. Build a site like yours in two minutes and see how far each way in could likely spread. No sign-up, and we never ask for real network details.',
+  sub: 'A phished IT login, a stolen remote access login, an infected USB stick or visiting laptop, a poisoned software update or a compromised vendor account. Build a site like yours in two minutes and see how far each way in could likely spread. No sign-up, and we never ask for real network details.',
   cta: 'Build my site',
+  intro: 'Five short steps. Your answers stay in your browser the whole way through.',
   points: [
-    'Describe a site like yours with simple, generic options',
-    'We test five common ways in and show the worst case, step by step, with the reasoning for each step',
-    'Replay six real attacks and compare the fixes that would stop them',
+    {
+      title: STEP_NAMES[0],
+      text: 'Answer a few questions about how your site is laid out and connected. Generic options only, and "Not sure" is fine.',
+      get: 'A site like yours, in about two minutes',
+    },
+    {
+      title: STEP_NAMES[1],
+      text: 'See how far an attacker could likely get from five common ways in, with the reasoning for every step.',
+      get: 'Your score, broken into three areas: network layout, remote access, and devices and media',
+    },
+    {
+      title: STEP_NAMES[2],
+      text: 'Replay nine real attacks, including three in Australia, against the site you described.',
+      get: 'Whether each one would likely succeed, partly succeed or be stopped',
+    },
+    {
+      title: STEP_NAMES[3],
+      text: 'Add fixes in the order an experienced OT team would likely take them, over months rather than clicks.',
+      get: 'Your top three fixes and how your score could change after each phase',
+    },
+    {
+      title: STEP_NAMES[4],
+      text: 'Download a one-page board summary, or book a free 30-minute review with an OTCD engineer.',
+      get: 'Something to take to your manager or board',
+    },
   ],
 }
 
@@ -142,7 +168,7 @@ export const groups: { title: string; questions: Question[] }[] = [
         label: 'Are safety controller key switches left in program mode?',
         helper: 'Many safety controllers only accept new logic when a physical key switch is in program mode.',
         options: [
-          { value: 'program', label: 'Program, or not sure', hint: 'Left where logic can be changed' },
+          { value: 'program', label: 'Program', hint: 'Left where logic can be changed' },
           { value: 'run', label: 'Kept in run', hint: 'Moved to program only under a permit' },
         ],
       },
@@ -236,7 +262,8 @@ export const why = {
 
 export const spreadReason = {
   open: (z: ZoneId) => `Likely to spread across ${ZONE_NAMES[z].toLowerCase()}: little separates the devices inside this zone.`,
-  restricted: (z: ZoneId) => `Likely held to one device in ${ZONE_NAMES[z].toLowerCase()}: network segmentation separates each asset.`,
+  restricted: (z: ZoneId, cloaked = false) =>
+    `Likely held to one device in ${ZONE_NAMES[z].toLowerCase()}: ${cloaked ? 'the other devices are cloaked, so they are hard to find' : 'network segmentation separates each asset'}.`,
 }
 
 export const safetyRule = {
@@ -302,7 +329,6 @@ export const scenarioText: Record<ScenarioId, { succeeds: string; stopped: strin
 }
 
 export const results = {
-  eyebrow: 'Your blast radius',
   heading: 'How far an attacker could likely get on your site',
   reachHeading: 'What an attacker could likely reach',
   bands: {
@@ -322,23 +348,19 @@ export const results = {
   likelihoodNote:
     'The score weights each asset group by how likely it is to be reached: likely counts fully, possible about 60% and unlikely about 30%.',
   showPath: 'Show the likely attack path',
-  worstCase: 'Worst case across all entry points',
+  worstCase: 'Worst case across every way in',
   steps: (n: number | null) =>
     n === null ? 'Control unlikely to be reached' : n === 0 ? 'Likely lands in control directly' : `Likely ${n} ${n === 1 ? 'step' : 'steps'} to reach control`,
   stepsHelp:
     'Roughly how many moves between zones an attacker would need before they could change control logic. Fewer steps usually means less chance to detect and stop them.',
   // Shape as well as colour, so the map works for colour-blind visitors.
   icon: { hit: '▲', possible: '◆', unlikely: '◇', safe: '✓', blocked: '■' },
+  // Same levels, shorter words, for the narrow control-level boxes on the map.
+  stateShort: { hit: 'Likely', possible: 'Possibly', unlikely: 'Unlikely', safe: 'Likely safe', blocked: 'Blocked' },
   state: { hit: 'Likely reached', possible: 'Possibly reached', unlikely: 'Unlikely, but possible', safe: 'Likely safe', blocked: 'Likely blocked' },
-  tags: { entry: 'Way in', cross: 'Likely crosses', possible: 'Could cross', unlikely: 'Unlikely, possible', spread: 'Inside zone', stopped: 'Likely stopped', entryFailed: 'Way in unlikely' },
+  tags: { entry: 'Way in', cross: 'Likely crosses', possible: 'Could cross', unlikely: 'Unlikely, but possible', spread: 'Inside zone', stopped: 'Likely stopped', entryFailed: 'Way in unlikely' },
   outcome: {
-    succeed: 'Likely to succeed',
-    possible: 'Could succeed',
-    unlikely: 'Unlikely, but possible',
-    stoppedAt: (a: string, b: string) => `Likely stopped at: ${a} → ${b}`,
-    stopped: 'Likely stopped',
     replaying: 'Replaying…',
-    cell: { succeeds: 'Likely succeeds', partly: 'Partly succeeds', stopped: 'Likely stopped' },
     label: { succeeds: 'Likely succeeds', partly: 'Partly succeeds', stopped: 'Likely stopped' },
   },
 }
@@ -361,13 +383,13 @@ export const fixes: Record<FixId, string> = {
 }
 
 export const tradeoffs: [string, string, string][] = [
-  ['Planned downtime', 'Usually needs outage windows', 'Designed to deploy without downtime'],
+  ['Planned downtime', 'Usually needs outage windows', 'Designed to avoid downtime'],
   ['Re-IP of devices', 'Often required', 'Not usually required'],
-  ['Changes to PLC/HMI config', 'Sometimes', 'None expected'],
+  ['Changes to PLC or HMI configuration', 'Sometimes', 'None expected'],
   ['Time to first protected zone', 'Longer (design, change approvals, outages)', 'Shorter (start with highest-risk assets)'],
   ['Protects legacy devices', 'Only if they can be moved or patched', 'Yes, designed to wrap unpatchable devices'],
   ['Ongoing effort', 'Firewall rule management', 'Policy managed centrally'],
-  ['Honest downsides', 'Proven, familiar to IT teams', 'New platform for the team to learn; needs OT-aware design to get policies right'],
+  ['Honest downsides', 'Often disruptive and slow to roll out on a running plant', 'A new platform for the team to learn; needs OT-aware design to get policies right'],
 ]
 
 export const offer = {

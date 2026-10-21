@@ -125,7 +125,6 @@ export type Phase = {
 }
 
 export const planText = {
-  eyebrow: 'Step 4',
   heading: 'Plan it step by step',
   lead: 'Real programs run over months, not clicks. This is the order an experienced OT team would likely take, with your site in mind. Add steps to your plan one at a time and watch the likely result change.',
   viewAs: 'View as:',
