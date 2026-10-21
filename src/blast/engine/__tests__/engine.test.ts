@@ -19,10 +19,11 @@ describe('OT Blast Radius engine (spec section 13)', () => {
     expect(runScenario(D, 'colonial').succeeded).toBe(true)
   })
 
-  it('Colonial Pipeline is stopped by zero trust remote access plus overlay network segmentation', () => {
-    const r = runScenario(applyFixes(D, ['fix_remote', 'fix_segment_overlay']), 'colonial')
-    expect(r.succeeded).toBe(false)
-    expect(r.reason.toLowerCase()).toContain('remote access')
+  it('Colonial Pipeline is stopped by zero trust, reviewed accounts and a DMZ (Ronald rule)', () => {
+    expect(runScenario(applyFixes(D, ['fix_remote', 'fix_segment_overlay']), 'colonial').outcome).toBe('succeeds') // a rarely reviewed account is enough
+    const r = runScenario(applyFixes(D, ['fix_remote', 'fix_segment_overlay', 'fix_accounts']), 'colonial')
+    expect(r.outcome).toBe('stopped')
+    expect(r.reason.toLowerCase()).toContain('dormant')
   })
 
   it('Stuxnet still succeeds with a claimed air gap and uncontrolled USB', () => {
@@ -86,7 +87,7 @@ describe('extra checks', () => {
   })
 
   it('copy never names the technology partner or offers a demo', async () => {
-    const copy = JSON.stringify(await import('../../content/copy.ts'))
+    const copy = JSON.stringify(await import('../../content/copy.ts')) + JSON.stringify(await import('../../content/plan.ts'))
     expect(copy.toLowerCase()).not.toMatch(/blastwave|blastshield|\bdemo\b/)
     expect(copy).not.toMatch(/—/)
   })

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { DEFAULT_INPUTS as D } from '../inputs.ts'
+import { contradictions, DEFAULT_INPUTS as D } from '../inputs.ts'
 import { simulate, worstCase } from '../simulate.ts'
 import { runScenario, SCENARIOS } from '../scenarios.ts'
 import type { Capability, Inputs } from '../types.ts'
@@ -47,17 +47,19 @@ describe('expert review changes', () => {
     expect(simulate({ ...tidy, vendorCount: 25 }, 'stolen_remote_cred', 2).entrySucceeded).toBe(false)
   })
 
-  it('6. Triton is stopped when safety key switches are kept in run, even if the safety network is reached', () => {
-    const run = runScenario({ ...D, sisKeySwitch: 'run' }, 'triton')
-    expect(run.reachedZones).toContain('SIS')
-    expect(run.succeeded).toBe(false)
-    expect(run.reason).toMatch(/key switch/)
-    expect(runScenario({ ...D, sisKeySwitch: 'program' }, 'triton').succeeded).toBe(true)
+  it('6. Triton is stopped only with a dedicated safety zone and the key in run (Ronald rule)', () => {
+    expect(runScenario({ ...D, sisKeySwitch: 'run' }, 'triton').outcome).not.toBe('stopped')
+    const r = runScenario({ ...D, sisKeySwitch: 'run', sisZone: 'dedicated' }, 'triton')
+    expect(r.outcome).toBe('stopped')
+    expect(r.reason).toMatch(/key in run/)
+    expect(runScenario({ ...D, sisKeySwitch: 'program' }, 'triton').outcome).toBe('succeeds')
     expect(worstCase({ ...D, sisKeySwitch: 'run' }).worst.sisLogicChangeable).toBe(false)
   })
 
-  it('7. a claimed air gap with remote access is called out', () => {
-    expect(simulate({ ...D, itOtLink: 'airgap_claimed' }, 'stolen_remote_cred', 2).entryReason).toMatch(/not air-gapped/)
+  it('7. a claimed air gap with remote access is called out and scored as connected (rule C9)', () => {
+    expect(contradictions({ ...D, itOtLink: 'airgap_claimed' }).join(' ')).toMatch(/not air-gapped/)
+    expect(simulate({ ...D, itOtLink: 'airgap_claimed' }, 'stolen_remote_cred', 2).entrySucceeded).toBe(true)
+    expect(contradictions({ ...D, itOtLink: 'airgap_claimed', remoteAccess: 'none' })).toEqual([])
   })
 
   it('8. steps to reach control tell the ways in apart', () => {

@@ -2,7 +2,8 @@ import type { Band, Likelihood, Site } from './types.ts'
 import { LIKELIHOOD_WEIGHT } from './conduits.ts'
 
 export function bandFor(score: number): Band {
-  return score <= 20 ? 'Contained' : score <= 50 ? 'Partly exposed' : 'Highly exposed'
+  // Rule C8: 0 to 20 Contained, 21 to 60 Partly exposed, 61 to 100 Highly exposed.
+  return score <= 20 ? 'Contained' : score <= 60 ? 'Partly exposed' : 'Highly exposed'
 }
 
 /**
