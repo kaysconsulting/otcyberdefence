@@ -20,7 +20,8 @@ import { complianceGaps, FIX_ADDRESSES } from '../blast/engine/compliance.ts'
 import { img } from '../media.ts'
 
 type Step = 0 | 1 | 2 | 3 | 4 | 5
-const STEPS = ['Build your site', 'Your blast radius', 'Replay real attacks', 'Plan step by step', 'Free review']
+const STEPS = C.STEP_NAMES
+const stepLabel = (n: number) => `Step ${n} · ${STEPS[n - 1]}`
 
 type State = {
   step: Step
@@ -220,14 +221,19 @@ export default function BlastRadius() {
 function Landing({ onStart }: { onStart: () => void }) {
   return (
     <div className="br-landing">
-      <div className="grid3" style={{ marginTop: 0 }}>
+      <p className="br-intro">{C.landing.intro}</p>
+      <ol className="br-steps5">
         {C.landing.points.map((p, k) => (
-          <div key={p} className="card">
-            <span className="tag">Step {k + 1}</span>
-            <p style={{ color: 'var(--ink)', fontWeight: 600 }}>{p}</p>
-          </div>
+          <li key={p.title}>
+            <span className="br-steps5-n">{k + 1}</span>
+            <b>{p.title}</b>
+            <p>{p.text}</p>
+            <small>
+              <em>You get:</em> {p.get}
+            </small>
+          </li>
         ))}
-      </div>
+      </ol>
       <p className="br-centre">
         <button className="btn btn-blue" onClick={onStart}>
           {C.landing.cta}
@@ -276,7 +282,7 @@ function Build({ inputs, unsure, sector, set, setUnsure, setSector, next }: {
   )
   return (
     <div className="br-build">
-      <span className="eyebrow">Step 1</span>
+      <span className="eyebrow">{stepLabel(1)}</span>
       <h2>Build a site like yours</h2>
       <p className="lead">Pick the closest match for each question, or "Not sure". The defaults describe a typical site that has not yet segmented its network.</p>
       <div className="br-group">
@@ -357,7 +363,7 @@ function Build({ inputs, unsure, sector, set, setUnsure, setSector, next }: {
       <div className="br-nav">
         <span />
         <button className="btn btn-red" onClick={next}>
-          Show my blast radius →
+          {STEPS[1]} →
         </button>
       </div>
     </div>
@@ -383,7 +389,7 @@ function Results({ data, inputs, unsure, share, capability, setCap, next, back }
   const strengths = area?.findings.filter((f) => f.good) ?? []
   return (
     <div>
-      <span className="eyebrow">{C.results.eyebrow}</span>
+      <span className="eyebrow">{stepLabel(2)}</span>
       <h2>{C.results.heading}</h2>
       <AttackerPicker value={capability} onChange={setCap} />
       {(unsure.length > 0 || flags.length > 0) && (
@@ -406,7 +412,7 @@ function Results({ data, inputs, unsure, share, capability, setCap, next, back }
             <b>{P.areaText.wholeSite}</b>
             <em className={`br-area-score lvl-${areaLevelOf(data.worst.band)}`}>{data.worst.exposureScore}</em>
           </span>
-          <span className="br-level">{data.worst.band}</span>
+          <span className={`br-level lvl-${areaLevelOf(data.worst.band)}`}>{P.areaLevel[areaLevelOf(data.worst.band)]}</span>
           <span className="br-area-q">{P.areaText.wholeSiteHint}</span>
           <small>{C.results.steps(data.worst.stepsToControl)}</small>
         </button>
@@ -496,10 +502,10 @@ function Results({ data, inputs, unsure, share, capability, setCap, next, back }
       <p className="fine">{C.results.likelihoodNote} {C.disclaimer}</p>
       <div className="br-nav">
         <button className="btn btn-line-b" onClick={back}>
-          ← Change my site
+          ← {STEPS[0]}
         </button>
         <button className="btn btn-red" onClick={next}>
-          Replay real attacks →
+          {STEPS[2]} →
         </button>
       </div>
     </div>
@@ -573,7 +579,7 @@ function OpsAtRisk({ inputs, r }: { inputs: Inputs; r: { l1Reached: boolean } })
   return <div className="br-banner br-banner-amber">{r.l1Reached ? C.results.opsRisk : C.results.opsRiskNoControl}</div>
 }
 
-const areaLevelOf = (b: string) => (b === 'Highly exposed' ? 'high' : b === 'Partly exposed' ? 'medium' : 'low')
+const areaLevelOf = (b: string): 'high' | 'medium' | 'low' => (b === 'Highly exposed' ? 'high' : b === 'Partly exposed' ? 'medium' : 'low')
 
 function AttackerPicker({ value, onChange }: { value: Capability; onChange: (c: Capability) => void }) {
   return (
@@ -667,7 +673,7 @@ function Legend() {
         <i className="lg-block" /> {C.results.icon.blocked} {C.results.state.blocked}
       </li>
       <li>
-        <i className="lg-entry" /> Entry point
+        <i className="lg-entry" /> Way in
       </li>
     </ul>
   )
@@ -707,7 +713,7 @@ function Replay({ inputs, sector, next, back, latest }: { inputs: Inputs; sector
   const site = res?.runs[0].site
   return (
     <div>
-      <span className="eyebrow">Step 3 · OT Threat Files</span>
+      <span className="eyebrow">{stepLabel(3)}</span>
       <h2>Replay real attacks against your site</h2>
       <p className="lead">Pick an attack. We replay how it worked against the layout you described and show the most likely outcome: likely succeeds, partly succeeds or likely stopped.</p>
       <div className="br-cards">
@@ -793,12 +799,13 @@ function Replay({ inputs, sector, next, back, latest }: { inputs: Inputs; sector
       <p className="fine">
         {C.methodology} Attack facts and sources last reviewed {LAST_REVIEWED}.
       </p>
+      <p className="fine">{C.disclaimer}</p>
       <div className="br-nav">
         <button className="btn btn-line-b" onClick={back}>
-          ← My blast radius
+          ← {STEPS[1]}
         </button>
         <button className="btn btn-red" onClick={next}>
-          Plan step by step →
+          {STEPS[3]} →
         </button>
       </div>
     </div>
@@ -821,7 +828,7 @@ function Plan(p: { pretick: boolean; setFixes: (f: FixId[]) => void; inputs: Inp
   const T = P.planText
   return (
     <div>
-      <span className="eyebrow">{T.eyebrow}</span>
+      <span className="eyebrow">{stepLabel(4)}</span>
       <h2>{T.heading}</h2>
       <p className="lead">{T.lead}</p>
       <div className="br-attacker">
@@ -992,10 +999,10 @@ function Plan(p: { pretick: boolean; setFixes: (f: FixId[]) => void; inputs: Inp
       <p className="fine">{C.disclaimer}</p>
       <div className="br-nav">
         <button className="btn btn-line-b" onClick={p.back}>
-          ← Replay attacks
+          ← {STEPS[2]}
         </button>
         <button className="btn btn-red" onClick={p.next}>
-          Get my summary and review →
+          {STEPS[4]} →
         </button>
       </div>
     </div>
@@ -1127,7 +1134,7 @@ function SummaryCard({ inputs, fixes, current, withFixes }: { inputs: Inputs; fi
             .
           </p>
           <button className="btn btn-blue" type="submit" disabled={busy} style={{ justifySelf: 'start' }}>
-            {busy ? 'Preparing...' : 'Get my board summary (PDF)'}
+            {busy ? 'Preparing…' : 'Get my board summary (PDF)'}
           </button>
         </form>
       )}
@@ -1181,8 +1188,8 @@ function Offer({ sector, inputs, fixes, current, withFixes, wantLatest, back }: 
 
   return (
     <div>
-      <span className="eyebrow">Step 5</span>
-      <h2>Your summary and a free review</h2>
+      <span className="eyebrow">{stepLabel(5)}</span>
+      <h2>Your board summary and a free review</h2>
       <div className="br-offer">
         <SummaryCard inputs={inputs} fixes={fixes} current={current} withFixes={withFixes} />
         {sent ? (
@@ -1269,7 +1276,7 @@ function Offer({ sector, inputs, fixes, current, withFixes, wantLatest, back }: 
               </p>
             )}
             <button className="btn btn-red" type="submit" disabled={busy} style={{ justifySelf: 'start' }}>
-              {busy ? 'Sending...' : 'Book my free review'}
+              {busy ? 'Sending…' : 'Book my free review'}
             </button>
           </form>
         )}
@@ -1277,7 +1284,7 @@ function Offer({ sector, inputs, fixes, current, withFixes, wantLatest, back }: 
       <p className="fine">{C.disclaimer}</p>
       <div className="br-nav">
         <button className="btn btn-line-b" onClick={back}>
-          ← My plan
+          ← {STEPS[3]}
         </button>
         <span />
       </div>
@@ -1298,7 +1305,7 @@ function PrintSummary({ inputs, fixes, current, withFixes }: { inputs: Inputs; f
       <img src="/brand/otcd-logo.png" alt="" style={{ height: 60 }} />
       <h1>OT Blast Radius board summary</h1>
       <p>Prepared {new Date().toLocaleDateString('en-AU', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
-      <h2>Exposure estimate</h2>
+      <h2>Your score</h2>
       <p>Attacker: {C.attackers.find((a) => a.value === current.capability)?.label} · {C.results.steps(current.stepsToControl)}</p>
       <p>
         Today: <b>{current.exposureScore}</b> ({current.band}) · With your plan: <b>{withFixes.exposureScore}</b> ({withFixes.band})

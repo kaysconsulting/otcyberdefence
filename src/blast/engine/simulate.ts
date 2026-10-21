@@ -75,7 +75,7 @@ export function simulate(rawInputs: Inputs, entry: EntryId, capability: Capabili
         if (zoneAssets.length > 1) path.push({ kind: 'spread', to: zone, reason: spreadReason.open(zone), likelihood: lik })
       } else {
         reach(landingAsset.id)
-        if (zoneAssets.length > 1) path.push({ kind: 'spread', to: zone, reason: spreadReason.restricted(zone), likelihood: lik })
+        if (zoneAssets.length > 1) path.push({ kind: 'spread', to: zone, reason: spreadReason.restricted(zone, inputs.architecture !== 'microsegmented'), likelihood: lik })
       }
 
       const reachedHere = site.assets.filter((a) => a.zone === zone && reachedAssets.has(a.id))

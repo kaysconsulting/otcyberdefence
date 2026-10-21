@@ -46,7 +46,7 @@ export default function SiteDiagram({ site, reached, entryZones, blocked, active
             </text>
             {isEntry && (
               <text x={LABEL - 22} y={y + 18} textAnchor="end" className="br-entry-tag">
-                ENTRY
+                WAY IN
               </text>
             )}
             {!present ? (
@@ -71,12 +71,12 @@ export default function SiteDiagram({ site, reached, entryZones, blocked, active
                       y={y + ROW_H / 2 - 4}
                       textAnchor="middle"
                       className="br-asset-label"
-                      style={{ fontSize: Math.min(12, (boxW - 10) / (label.length * 0.6)) }}
+                      style={{ fontSize: Math.max(9.5, Math.min(12, (boxW - 10) / (label.length * 0.6))) }}
                     >
                       {label}
                     </text>
                     <text x={x + boxW / 2} y={y + ROW_H / 2 + 14} textAnchor="middle" className={`br-asset-state br-${state}-t`}>
-                      {R.icon[state]} {R.state[state]}
+                      {R.icon[state]} {boxW < 130 ? R.stateShort[state] : R.state[state]}
                     </text>
                     {a.legacy && (
                       <text x={x + boxW - 6} y={y + 12} textAnchor="end" className="br-legacy-tag">
