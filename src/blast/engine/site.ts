@@ -52,7 +52,8 @@ export function buildSite(inputs: Inputs): Site {
   )
   let sis = pick<Strength>(inputs, { flat: 0, vlans: 0, purdue_dmz: 1, microsegmented: 2 })
   if (inputs.sisZone === 'dedicated') sis = (dmz ? 3 : Math.max(sis, 2)) as Strength
-  for (const z of ['L3', 'L2', 'L1'] as ZoneId[]) add(z, 'SIS', sis)
+  // On a shared safety network the engineering workstation usually also programs the safety controllers (the Triton path).
+  for (const z of ['L3', 'L2', 'L1'] as ZoneId[]) add(z, 'SIS', sis, z === 'L3' && inputs.sisZone === 'shared' ? 'EWS safety programming' : undefined)
 
   const restricted = inputs.architecture === 'microsegmented'
   const intraSpread = Object.fromEntries(

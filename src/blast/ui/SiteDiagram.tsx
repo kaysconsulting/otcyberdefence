@@ -1,5 +1,7 @@
 import type { BlockedStep, Likelihood, Site, ZoneId } from '../engine/types.ts'
 import { results as R, STRENGTH_NAMES, ZONE_NAMES, ZONE_SHORT } from '../content/copy.ts'
+import { assetLabel } from '../content/sectors.ts'
+import { useSector } from './context.ts'
 
 const ROWS: ZoneId[] = ['L4', 'L35', 'L3', 'L2', 'L1', 'SIS']
 const W = 820
@@ -19,6 +21,7 @@ type Props = {
 
 /** Purdue-style site diagram: reached assets in red, safe in white, entry point in navy, blocked dashed. */
 export default function SiteDiagram({ site, reached, entryZones, blocked, activeZone, likelihood }: Props) {
+  const sector = useSector()
   const reachedSet = new Set(reached)
   const blockedInto = new Set(blocked.map((b) => b.to))
   const H = ROWS.length * (ROW_H + GAP) - GAP + 20
@@ -59,14 +62,21 @@ export default function SiteDiagram({ site, reached, entryZones, blocked, active
                 const lik = likelihood?.[a.id] ?? 'likely'
                 const state = hit ? (lik === 'likely' ? 'hit' : lik) : blockedInto.has(z) ? 'blocked' : 'safe'
                 const x = LABEL + k * (boxW + 8)
+                const label = assetLabel(a.id, a.label, sector)
                 return (
                   <g key={a.id}>
                     <rect x={x} y={y} width={boxW} height={ROW_H} rx={6} className={`br-asset br-${state}`} />
-                    <text x={x + boxW / 2} y={y + ROW_H / 2 - 4} textAnchor="middle" className="br-asset-label">
-                      {a.label}
+                    <text
+                      x={x + boxW / 2}
+                      y={y + ROW_H / 2 - 4}
+                      textAnchor="middle"
+                      className="br-asset-label"
+                      style={{ fontSize: Math.min(12, (boxW - 10) / (label.length * 0.6)) }}
+                    >
+                      {label}
                     </text>
                     <text x={x + boxW / 2} y={y + ROW_H / 2 + 14} textAnchor="middle" className={`br-asset-state br-${state}-t`}>
-                      {R.state[state]}
+                      {R.icon[state]} {R.state[state]}
                     </text>
                     {a.legacy && (
                       <text x={x + boxW - 6} y={y + 12} textAnchor="end" className="br-legacy-tag">

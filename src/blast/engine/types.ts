@@ -6,7 +6,7 @@ export type Likelihood = 'likely' | 'possible' | 'unlikely'
 
 export interface Inputs {
   architecture: 'flat' | 'vlans' | 'purdue_dmz' | 'microsegmented'
-  remoteAccess: 'vpn_password' | 'vpn_mfa' | 'jumpbox' | 'zero_trust_biometric'
+  remoteAccess: 'none' | 'vpn_password' | 'vpn_mfa' | 'jumpbox' | 'zero_trust_biometric'
   vendorCount: number
   sharedAccounts: boolean
   dormantAccounts: 'rarely' | 'regularly'
@@ -49,6 +49,8 @@ export interface PathStep {
   to: ZoneId
   reason: string
   likelihood?: Likelihood
+  /** Crossed by using a login rather than beating a control. */
+  viaCreds?: boolean
 }
 
 export interface BlockedStep {
@@ -62,6 +64,8 @@ export type Band = 'Contained' | 'Partly exposed' | 'Highly exposed'
 export interface SimResult {
   entry: EntryId
   entrySucceeded: boolean
+  /** How likely the way in itself is to work. */
+  entryLikelihood: Likelihood
   entryReason: string
   entryZones: ZoneId[]
   reachedAssetIds: string[]
@@ -83,15 +87,36 @@ export interface SimResult {
   site: Site
 }
 
-export type FixId = 'fix_remote' | 'fix_segment_overlay' | 'fix_cloak' | 'fix_media' | 'fix_accounts'
+export type FixId =
+  | 'fix_accounts'
+  | 'fix_keyswitch'
+  | 'fix_media'
+  | 'fix_remote'
+  | 'fix_itot_dmz'
+  | 'fix_sis_zone'
+  | 'fix_segment_overlay'
+  | 'fix_cloak'
+export type AreaId = 'network' | 'remote' | 'devices'
 
-export type ScenarioId = 'stuxnet' | 'ukraine2015' | 'triton' | 'notpetya' | 'colonial' | 'dpworld'
+export type ScenarioId =
+  | 'stuxnet'
+  | 'ukraine2015'
+  | 'triton'
+  | 'notpetya'
+  | 'colonial'
+  | 'dpworld'
+  | 'maroochy'
+  | 'frostygoop'
+  | 'cyberav3ngers'
+
+/** Likely succeeds, partly succeeds (gets in, then is likely stopped), or likely stopped. */
+export type ScenarioOutcome = 'succeeds' | 'partly' | 'stopped'
 
 export interface ScenarioResult {
   id: ScenarioId
+  outcome: ScenarioOutcome
+  /** True only for "Likely succeeds". */
   succeeded: boolean
-  /** How likely success is, when it can succeed at all. */
-  likelihood?: Likelihood
   reason: string
   stoppedAt?: BlockedStep
   runs: SimResult[]

@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { company } from '../content.ts'
 import Banner from '../components/Banner.tsx'
 
-const UPDATED = '20 October 2026'
+const UPDATED = '21 October 2026'
 
 export default function Privacy() {
   useEffect(() => {
@@ -42,13 +42,18 @@ export default function Privacy() {
               message. If you tick the box to share them, we also receive the generic settings you chose in the tool.
             </li>
             <li>
+              <b>OT Blast Radius board summary:</b> your name, work email and company, together with your result and the
+              generic settings you chose in the tool, so we can follow up if you would like help.
+            </li>
+            <li>
               <b>Emails and calls:</b> the details you give us when you contact us directly.
             </li>
           </ul>
           <p>
             <b>OT Blast Radius never asks for real network details.</b> It does not ask for IP addresses, hostnames,
             device models, firmware versions, site names or diagrams. The settings you choose are generic, stay in your
-            browser while you use the tool, and are only sent to us if you choose to share them with a review request.
+            browser while you use the tool, and are only sent to us if you ask for the board summary or choose to share them
+            with a review request.
           </p>
 
           <h2>3. Anonymous usage information</h2>

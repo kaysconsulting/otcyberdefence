@@ -1,6 +1,6 @@
 // All user-facing text for OT Blast Radius, in one place so wording can be reviewed without touching logic.
 // House rules: no partner names, no "demo", always "network segmentation", Australian English, no em dashes.
-import type { EntryId, Inputs, ZoneId } from '../engine/types.ts'
+import type { EntryId, FixId, Inputs, ScenarioId, ZoneId } from '../engine/types.ts'
 
 export const ZONE_NAMES: Record<ZoneId, string> = {
   L4: 'Enterprise IT',
@@ -32,12 +32,12 @@ export const STRENGTH_NAMES = ['open', 'filtered', 'controlled', 'blocked'] as c
 
 export const landing = {
   eyebrow: 'Free tool · OT Blast Radius',
-  title: 'How far would one stolen login get on your site?',
-  sub: 'Build a site like yours in two minutes. Replay real OT attacks against it. No sign-up, and we never ask for real network details.',
+  title: 'If an attacker got in, how far could they likely get on your site?',
+  sub: 'A phishing email, a stolen remote login, an infected USB stick, a poisoned software update or a vendor account. Build a site like yours in two minutes and see how far each way in could likely spread. No sign-up, and we never ask for real network details.',
   cta: 'Build my site',
   points: [
     'Describe a site like yours with simple, generic options',
-    'See how far an attacker could likely get, step by step, with the reasoning for each step',
+    'We test five common ways in and show the worst case, step by step, with the reasoning for each step',
     'Replay six real attacks and compare the fixes that would stop them',
   ],
 }
@@ -108,6 +108,7 @@ export const groups: { title: string; questions: Question[] }[] = [
           { value: 'vpn_mfa', label: 'VPN with MFA', hint: 'App or SMS codes' },
           { value: 'jumpbox', label: 'Jump box', hint: 'A jump box in the DMZ' },
           { value: 'zero_trust_biometric', label: 'Zero trust', hint: 'Passwordless biometric MFA, per-asset access' },
+          { value: 'none', label: 'No remote access', hint: 'Nobody connects from outside' },
         ],
       },
       { id: 'vendorCount', label: 'Roughly how many vendors have remote access?', helper: 'Each vendor account is another way in.', kind: 'slider' },
@@ -161,11 +162,20 @@ export const groups: { title: string; questions: Question[] }[] = [
 export const notes = {
   flatForcesDirect: 'A flat network has no separation between IT and OT, so IT and OT connect directly.',
   vendorRisk: (n: number) =>
-    n >= 20
-      ? `With ${n} vendors holding remote access, a compromised vendor account is a realistic way in.`
-      : n > 0
-        ? `${n} vendors hold remote access. Each one is another account that can be lost or stolen.`
-        : 'No vendors hold remote access.',
+    n >= 26
+      ? 'This many vendor accounts make a vendor compromise one of your most likely ways in.'
+      : n >= 11
+        ? 'With this many vendor accounts, it is likely at least one could be compromised.'
+        : n >= 3
+          ? 'Each vendor account is another login that could be stolen.'
+          : n > 0
+            ? 'A small number of vendors with remote access keeps this risk manageable.'
+            : 'No vendors hold remote access.',
+  airgapWithRemote: 'Remote access means your site has a network path in. We have scored it as connected, not air-gapped.',
+  dmzBypassed: 'If IT can route straight to OT, the DMZ is bypassed. We have scored it as VLANs with broad firewall rules.',
+  unsure: 'We assumed the riskier answer. Finding out is a quick first step.',
+  unsureCount: (n: number) =>
+    `You chose "Not sure" for ${n} ${n === 1 ? 'question' : 'questions'}, so we assumed the riskier answer. Finding out is a quick first step.`,
 }
 
 // Entry reasons. Wording is probabilistic on purpose: the model shows likely outcomes, not certainties.
@@ -187,6 +197,10 @@ export const entryReason = {
   vendorMfaGap: (n: number) =>
     `With ${n} vendors holding access, MFA exceptions, shared vendor logins and vendors' own remote tools become likely, so a compromised vendor account could well get in.`,
   noVendors: 'No vendors hold remote access, so there is no vendor account to compromise.',
+  noRemote: 'There is no remote access, so there is no remote login to steal.',
+  fewVendors: 'Only a few vendors hold remote access, so a vendor compromise is unlikely, but possible.',
+  usbControlled: 'USB drives and visiting laptops are checked before they connect, so infected media is unlikely, but still possible, to get through.',
+  commodityVendor: 'Commodity crews rarely go to the effort of a vendor or supply chain attack, so this way in is possible rather than likely.',
   updateIt: 'A trusted IT software update could carry the malware onto corporate PCs.',
   updateOtDmz: 'OT vendor updates are staged on the DMZ patch server, so a poisoned update would most likely land there first.',
   updateOtDirect: 'With no DMZ to stage it, an OT vendor update would likely install straight onto site operations servers.',
@@ -209,9 +223,10 @@ export const why = {
   legacy: 'unpatched services on a legacy device would likely make the pivot easier',
   allowedFlow: 'the engineering workstation is allowed to program the PLCs, and an attacker could ride that trusted traffic',
   credential: 'the stolen login is likely authorised to use this remote access route, so no firewall would need to be beaten',
+  sharedReuse: 'shared logins are likely reused on jump hosts and HMIs, so the same credential would probably open the next step',
+  allowedFlowSis: 'on a shared safety network the engineering workstation usually also programs the safety controllers',
+  cloakedCommodity: 'the OT devices are cloaked, and commodity crews tend to give up when there is nothing easy to find.',
   blocked: 'there appears to be no network path between these zones.',
-  commodityNoLogic:
-    'commodity attackers tend to encrypt Windows systems and rarely have the know-how to change PLC or safety controller logic.',
   controlled: 'the conduit should only allow specific, authorised traffic.',
   sisDedicated: 'safety systems sit in their own zone with no routed path in.',
   airgap: 'with no network path from IT into OT, network-based attacks would most likely stop here.',
@@ -224,21 +239,71 @@ export const spreadReason = {
   restricted: (z: ZoneId) => `Likely held to one device in ${ZONE_NAMES[z].toLowerCase()}: network segmentation separates each asset.`,
 }
 
-export const scenarioReason = {
-  intertwined: 'IT and OT appear too intertwined to isolate one without stopping the other, so an operational shutdown is likely.',
-  separable: 'IT and OT can likely be separated, so operations could probably keep running while IT recovered.',
-  reached: (z: ZoneId) => `The attacker could likely reach ${ZONE_NAMES[z].toLowerCase()}.`,
-  spread: 'The malware would likely spread beyond where it landed.',
-  contained: 'The malware would most likely stay where it landed.',
-  intoOps: 'The malware would likely spread into operations.',
-  keptOutOfOps: 'The malware would most likely be kept out of operations.',
-  sisKeySwitch:
-    "The attacker could likely reach the safety network, but with the controllers' key switches in run, changing their logic remotely is unlikely.",
+export const safetyRule = {
+  reached: (l: 'likely' | 'possible' | 'unlikely', protections: number) =>
+    `${l === 'likely' ? 'Likely to reach' : l === 'possible' ? 'Could reach' : 'Unlikely, but possible, to reach'} the safety systems: ${
+      protections === 2
+        ? 'only two of the three safety protections are in place (a dedicated zone, key switches in run, and cloaked or per-asset segmented devices)'
+        : 'they are not well enough separated from control, so an attacker who reaches control can likely reach them too'
+    }.`,
+  safe: 'Likely to stop at the safety systems: they have their own zone, key switches in run, and devices that are cloaked or segmented per asset.',
+}
+
+const PARTLY = 'The attacker would likely get in, but is likely stopped before reaching the target. The replay shows where.'
+const OPS_NOTE = 'OT was not reported as reached. Operations stopped because the business could not be sure OT was safe.'
+
+/** Replay outcome text for each attack (Ronald's replay rules). */
+export const scenarioText: Record<ScenarioId, { succeeds: string; stopped: string; partly: string }> = {
+  stuxnet: {
+    succeeds: 'Nothing checks removable media, and the layout would likely let malware on the engineering workstation reach your controllers.',
+    stopped: 'Removable media is checked before it connects, so the malware is unlikely to reach your engineering workstation.',
+    partly: PARTLY,
+  },
+  ukraine2015: {
+    succeeds: 'A password-only VPN, with shared logins or visible devices, would likely give the attackers the same route to your HMIs.',
+    stopped: 'Without a password to steal, the remote access step that opened the breakers is unlikely to work.',
+    partly: 'MFA or a jump box would likely slow this down, but harvested credentials could still get part of the way. The replay shows where.',
+  },
+  triton: {
+    succeeds: 'Control is likely within reach, and the safety controllers share its network or are left in program, so their logic could potentially be changed.',
+    stopped: 'Your safety controllers are in their own zone with the key in run, so their logic is unlikely to be changed.',
+    partly: 'The attacker is unlikely to change safety logic easily here, but one of the safety protections is missing. The replay shows how far they likely get.',
+  },
+  notpetya: {
+    succeeds: 'With IT and OT this closely connected, a poisoned update would likely spread into operations.',
+    stopped: 'Updates are staged in the DMZ and segments limit spread, so a poisoned update is likely contained.',
+    partly: PARTLY,
+  },
+  colonial: {
+    succeeds: `A reusable password or a forgotten account would likely open the same way in. ${OPS_NOTE}`,
+    stopped: 'No dormant accounts and no reusable passwords means this way in is unlikely to work, and a DMZ would let operations keep running.',
+    partly: `This way in is harder here, but operations could still be at risk if IT is hit. ${OPS_NOTE}`,
+  },
+  dpworld: {
+    succeeds: `Operations likely depend on IT here, so an IT intrusion could stop them. ${OPS_NOTE}`,
+    stopped: 'Operations sit behind segmented zones, so it is more likely you could keep running while you contain the incident.',
+    partly: `A DMZ helps, but without network segmentation inside OT it may be hard to be sure operations are safe. ${OPS_NOTE}`,
+  },
+  maroochy: {
+    succeeds: 'Old access that is rarely reviewed, and devices that are easy to find, would likely let someone send false commands to your controllers.',
+    stopped: 'Accounts are reviewed regularly and devices are hidden or segmented, so this kind of access is unlikely to work.',
+    partly: PARTLY,
+  },
+  frostygoop: {
+    succeeds: 'Without network segmentation, and with devices that answer a scan, an attacker would likely reach your controllers and send them commands.',
+    stopped: 'Network segmentation, or a DMZ with cloaked devices, means an attacker is unlikely to find and reach your controllers.',
+    partly: PARTLY,
+  },
+  cyberav3ngers: {
+    succeeds: 'Visible devices with shared or unreviewed logins are exactly what these actors looked for, so this would likely succeed.',
+    stopped: 'Cloaked devices, or zero trust access with personal logins, mean there is unlikely to be anything to log in to.',
+    partly: PARTLY,
+  },
 }
 
 export const results = {
   eyebrow: 'Your blast radius',
-  heading: 'How far one way in could likely get on your site',
+  heading: 'How far an attacker could likely get on your site',
   reachHeading: 'What an attacker could likely reach',
   bands: {
     Contained: 'An attacker would likely gain a foothold, but is unlikely to get far.',
@@ -252,6 +317,8 @@ export const results = {
   sisUnlikely:
     'Reaching the safety systems is unlikely, but a highly capable attacker could possibly get there. Their logic could then potentially be changed.',
   l1Unlikely: 'Reaching control systems is unlikely, but possible for a highly capable attacker.',
+  opsRisk: 'Operations at risk: IT and OT are closely connected, so an IT incident could also mean stopping operations to be safe.',
+  opsRiskNoControl: 'Operations at risk: even if control is not reached, you may need to stop operations to be safe, because IT and OT are closely connected.',
   likelihoodNote:
     'The score weights each asset group by how likely it is to be reached: likely counts fully, possible about 60% and unlikely about 30%.',
   showPath: 'Show the likely attack path',
@@ -260,6 +327,8 @@ export const results = {
     n === null ? 'Control unlikely to be reached' : n === 0 ? 'Likely lands in control directly' : `Likely ${n} ${n === 1 ? 'step' : 'steps'} to reach control`,
   stepsHelp:
     'Roughly how many moves between zones an attacker would need before they could change control logic. Fewer steps usually means less chance to detect and stop them.',
+  // Shape as well as colour, so the map works for colour-blind visitors.
+  icon: { hit: '▲', possible: '◆', unlikely: '◇', safe: '✓', blocked: '■' },
   state: { hit: 'Likely reached', possible: 'Possibly reached', unlikely: 'Unlikely, but possible', safe: 'Likely safe', blocked: 'Likely blocked' },
   tags: { entry: 'Way in', cross: 'Likely crosses', possible: 'Could cross', unlikely: 'Unlikely, possible', spread: 'Inside zone', stopped: 'Likely stopped', entryFailed: 'Way in unlikely' },
   outcome: {
@@ -269,7 +338,8 @@ export const results = {
     stoppedAt: (a: string, b: string) => `Likely stopped at: ${a} → ${b}`,
     stopped: 'Likely stopped',
     replaying: 'Replaying…',
-    cell: { succeed: 'Likely succeeds', possible: 'Could succeed', unlikely: 'Unlikely, but possible', stopped: 'Likely stopped' },
+    cell: { succeeds: 'Likely succeeds', partly: 'Partly succeeds', stopped: 'Likely stopped' },
+    label: { succeeds: 'Likely succeeds', partly: 'Partly succeeds', stopped: 'Likely stopped' },
   },
 }
 
@@ -279,12 +349,15 @@ export const attackers = [
   { value: 3, label: 'Nation-state', hint: 'Well-funded, patient and highly capable.' },
 ] as const
 
-export const fixes = {
-  fix_remote: 'Replace VPNs with zero trust secure remote access',
-  fix_segment_overlay: 'Network segmentation as an overlay (OTCD)',
-  fix_cloak: 'Cloak OT devices from scanning',
-  fix_media: 'Control USB drives and visiting laptops',
+export const fixes: Record<FixId, string> = {
   fix_accounts: 'Remove shared and dormant accounts',
+  fix_keyswitch: 'Keep safety key switches in run, under a permit',
+  fix_media: 'Control USB drives and visiting laptops',
+  fix_remote: 'Replace VPNs with zero trust secure remote access',
+  fix_itot_dmz: 'Put an industrial DMZ between IT and OT',
+  fix_sis_zone: 'Move safety systems into their own zone',
+  fix_segment_overlay: 'Network segmentation as an overlay, zone by zone',
+  fix_cloak: 'Cloak OT devices from scanning',
 }
 
 export const tradeoffs: [string, string, string][] = [
@@ -304,12 +377,27 @@ export const offer = {
   consent:
     'By sending this form you agree that OT Cyber Defence may contact you about your request. We handle your details in line with the Australian Privacy Principles.',
   privacy:
-    'We collect anonymous usage events to improve this tool. Your settings are never stored unless you choose to share them.',
+    'We collect anonymous usage events to improve this tool. Your settings are only sent to us if you ask for the board summary or tick the box below.',
   thanks: 'Thanks. An OTCD engineer will be in touch within one business day to arrange your review.',
   roles: ['OT engineer', 'OT or site manager', 'Security', 'Executive', 'Other'],
   sectors: ['Energy', 'Water', 'Rail and transport', 'Ports', 'Mining', 'Oil and gas', 'Manufacturing', 'Government and defence', 'Other'],
   states: ['NSW', 'VIC', 'QLD', 'WA', 'SA', 'TAS', 'ACT', 'NT'],
 }
+
+export const summary = {
+  title: 'Get your board summary',
+  sub: 'A one-page PDF for your manager or board: your score, top compliance gaps with SOCI references, your top three fixes and your plan.',
+  consent:
+    'We will send your result and the generic settings you chose to OT Cyber Defence, so we can follow up if you would like help. We handle your details in line with the Australian Privacy Principles.',
+  thanks: 'Your summary is ready. Choose "Save as PDF" in the print window.',
+  howto: 'Your browser\'s print window opens. Choose "Save as PDF".',
+}
+
+export const privacyPromise =
+  'Your answers stay in your browser. Nothing is stored or sent to us unless you ask for the board summary or a review.'
+
+export const methodology =
+  'How this works: each answer sets how strong the controls are between zones. The tool then follows the most likely route from each way in, grading every step as likely, possible or unlikely. The score is the share of what matters on the site that an attacker could likely reach, weighted by how likely each part is. Each replay uses its own conditions, set by OTCD engineers from the public record of that attack.'
 
 export const disclaimer =
   'OT Blast Radius is an illustrative planning tool. It shows likely outcomes based on simplified, generic models, not certainties, and it is not a security assessment of your site. Real exposure depends on your specific architecture, configuration and controls. For an assessment of your environment, talk to OT Cyber Defence.'

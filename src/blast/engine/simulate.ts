@@ -3,7 +3,7 @@ import { buildSite } from './site.ts'
 import { resolveEntry } from './entry.ts'
 import { blockReason, canCross, crossReason, effectiveStrength, rankOf, weaker } from './conduits.ts'
 import { bandFor, exposure } from './score.ts'
-import { spreadReason } from '../content/copy.ts'
+import { safetyRule, spreadReason, entryReason as ER } from '../content/copy.ts'
 import { normalise } from './inputs.ts'
 
 interface Candidate {
@@ -23,6 +23,14 @@ export function simulate(rawInputs: Inputs, entry: EntryId, capability: Capabili
   const inputs = normalise(rawInputs)
   const site = buildSite(inputs)
   const res = resolveEntry(inputs, entry)
+  // C10: commodity crews rarely bother with vendor or supply chain routes.
+  let entryLik: Likelihood = res.likelihood
+  let entryText = res.reason
+  if (capability === 1 && (entry === 'vendor_account' || entry === 'poisoned_update') && entryLik === 'likely') {
+    entryLik = 'possible'
+    entryText = `${res.reason} ${ER.commodityVendor}`
+  }
+  const landedOnEws = res.landing.some((l) => l.asset === 'L3-ews')
   const path: PathStep[] = []
   const blocked: BlockedStep[] = []
   const reachedZones = new Set<ZoneId>()
@@ -30,13 +38,14 @@ export function simulate(rawInputs: Inputs, entry: EntryId, capability: Capabili
   const zoneLikelihood: Partial<Record<ZoneId, Likelihood>> = {}
   const assetLikelihood: Record<string, Likelihood> = {}
   const depthOf = new Map<ZoneId, number>()
+  const viaCredsInto = new Set<ZoneId>()
 
   if (res.succeeded) {
     const pending: Candidate[] = []
     let order = 0
     for (const l of res.landing) {
       if (!site.zones.includes(l.zone)) continue
-      pending.push({ ...l, depth: 0, lik: 'likely', step: { kind: 'entry', to: l.zone, reason: res.reason, likelihood: 'likely' }, order: order++ })
+      pending.push({ ...l, depth: 0, lik: entryLik, step: { kind: 'entry', to: l.zone, reason: entryText, likelihood: entryLik }, order: order++ })
     }
 
     while (pending.length) {
@@ -48,6 +57,7 @@ export function simulate(rawInputs: Inputs, entry: EntryId, capability: Capabili
       depthOf.set(zone, depth)
       zoneLikelihood[zone] = lik
       path.push(step)
+      if (step.kind === 'cross' && step.viaCreds) viaCredsInto.add(zone)
 
       const zoneAssets = site.assets.filter((a) => a.zone === zone)
       const landingAsset = zoneAssets.find((a) => a.id === asset) ?? zoneAssets[0]
@@ -72,14 +82,14 @@ export function simulate(rawInputs: Inputs, entry: EntryId, capability: Capabili
       for (const c of site.conduits.filter((c) => c.from === zone)) {
         if (reachedZones.has(c.to) || !site.zones.includes(c.to)) continue
         const eff = effectiveStrength(c, inputs, entry, reachedHere)
-        const x = canCross(c, eff, capability, inputs, reachedAssets.has('L3-ews'), entry)
+        const x = canCross(c, eff, { capability, inputs, entry, ewsReached: reachedAssets.has('L3-ews'), landedOnEws })
         if (x.ok) {
           const routeLik = weaker(lik, x.likelihood)
           pending.push({
             zone: c.to,
             depth: depth + 1,
             lik: routeLik,
-            step: { kind: 'cross', from: zone, to: c.to, reason: crossReason(c, eff, inputs, x.viaFlow, x.viaCreds, x.likelihood), likelihood: x.likelihood },
+            step: { kind: 'cross', from: zone, to: c.to, reason: crossReason(c, eff, inputs, x.viaFlow, x.viaCreds, x.likelihood), likelihood: x.likelihood, viaCreds: x.viaCreds },
             order: order++,
           })
         } else if (!blocked.some((b) => b.from === zone && b.to === c.to)) {
@@ -89,13 +99,57 @@ export function simulate(rawInputs: Inputs, entry: EntryId, capability: Capabili
     }
   }
 
+  if (res.succeeded && !res.restrictToSingleAsset) {
+    // Unpatchable devices: once within reach, known weaknesses make them likely, not just possible.
+    // Combination rules override single answers, so a zone reached only by reusing shared logins (C3) keeps its level.
+    for (const a of site.assets) if (a.legacy && assetLikelihood[a.id] === 'possible' && !viaCredsInto.has(a.zone)) assetLikelihood[a.id] = 'likely'
+
+    // C5: safety is only likely safe with a dedicated zone, the key in run, and devices cloaked or segmented per asset.
+    const prot = [inputs.sisZone === 'dedicated', inputs.sisKeySwitch === 'run', inputs.visibility === 'cloaked' || inputs.architecture === 'microsegmented'].filter(Boolean).length
+    const sisAssets = site.assets.filter((a) => a.zone === 'SIS')
+    const current = zoneLikelihood.SIS
+    let target: Likelihood | undefined = current
+    // Used as a ceiling: three protections keep safety likely safe, two cap it at possible; otherwise the attack path decides.
+    if (prot === 3) target = undefined
+    else if (target && prot === 2) target = weaker(target, 'possible')
+    if (target !== current) {
+      // Replace the safety part of the picture with the rule's result.
+      for (let k = path.length - 1; k >= 0; k--) if (path[k].to === 'SIS') path.splice(k, 1)
+      for (let k = blocked.length - 1; k >= 0; k--) if (blocked[k].to === 'SIS') blocked.splice(k, 1)
+      sisAssets.forEach((a) => {
+        reachedAssets.delete(a.id)
+        delete assetLikelihood[a.id]
+      })
+      reachedZones.delete('SIS')
+      delete zoneLikelihood.SIS
+      const from: ZoneId = zoneLikelihood.L1 ? 'L1' : 'L2'
+      if (target) {
+        reachedZones.add('SIS')
+        zoneLikelihood.SIS = target
+        sisAssets.forEach((a) => {
+          reachedAssets.add(a.id)
+          assetLikelihood[a.id] = target!
+        })
+        path.push({ kind: 'cross', from, to: 'SIS', reason: safetyRule.reached(target, prot), likelihood: target })
+      } else if (current) {
+        blocked.push({ from, to: 'SIS', reason: safetyRule.safe })
+      }
+    }
+  }
+
   // A zone reached later through another route is not "blocked" in the final picture.
   const finalBlocked = blocked.filter((b) => !reachedZones.has(b.to))
-  const score = exposure(site, assetLikelihood)
+  let score = exposure(site, assetLikelihood)
+  if (res.succeeded) {
+    // C4: on a flat network any foothold reaches control. C10: a nation-state is never fully contained.
+    if (inputs.architecture === 'flat') score = Math.max(score, 70)
+    if (capability === 3) score = Math.max(score, 10)
+  }
   return {
     entry,
     entrySucceeded: res.succeeded,
-    entryReason: res.reason,
+    entryLikelihood: entryLik,
+    entryReason: entryText,
     entryZones: res.landing.map((l) => l.zone).filter((z) => site.zones.includes(z)),
     reachedAssetIds: [...reachedAssets],
     reachedZones: [...reachedZones],
