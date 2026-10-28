@@ -12,6 +12,7 @@ import Expertise from './pages/Expertise.tsx'
 import ContactPage from './pages/ContactPage.tsx'
 import NotFound from './pages/NotFound.tsx'
 import BlastRadius from './pages/BlastRadius.tsx'
+import TelcoReadiness from './pages/TelcoReadiness.tsx'
 import Privacy from './pages/Privacy.tsx'
 
 function ScrollToTop() {
@@ -39,6 +40,7 @@ export default function App() {
           <Route path="/expertise" element={<Expertise />} />
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/blast-radius" element={<BlastRadius />} />
+          <Route path="/telco-readiness" element={<TelcoReadiness />} />
           <Route path="/privacy" element={<Privacy />} />
           <Route path="*" element={<NotFound />} />
         </Routes>

@@ -144,6 +144,12 @@ export default function ContactPage() {
             <div><b>Email</b>{company.email ? <a href={`mailto:${company.email}`}>{company.email}</a> : <Placeholder value="" label="email address" />}</div>
             <div><b>Phone</b>{company.phone ? <a href={`tel:${company.phone.replace(/\s/g, '')}`}>{company.phone}</a> : <Placeholder value="" label="phone number" />}</div>
             <div><b>Hours</b>Monday to Friday, 8.30am to 5.30pm AEST</div>
+            <div>
+              <b>LinkedIn</b>
+              <a href={company.linkedin} target="_blank" rel="noopener noreferrer">
+                Follow OT Cyber Defence for updates
+              </a>
+            </div>
           </div>
         </div>
       </section>

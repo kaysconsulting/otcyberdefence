@@ -345,6 +345,7 @@ export const company = {
   address: 'Unit 217, 14 Lexington Drive, Bella Vista NSW 2153',
   email: 'info@otcyberdefence.com.au',
   phone: '1300 224 389',
+  linkedin: 'https://www.linkedin.com/company/ot-cyber-defence-pty-ltd/',
 }
 
 // ─── Deeper layers (shown on section pages, behind "details" toggles) ────────────────────────

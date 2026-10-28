@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import { SECTORS } from '../data.ts'
 import { company } from '../content.ts'
 import Placeholder from './Placeholder.tsx'
+import LinkedInIcon from './LinkedInIcon.tsx'
 
 export default function Footer() {
   return (
@@ -13,6 +14,9 @@ export default function Footer() {
               <img src="/brand/otcd-logo.png" alt="OT Cyber Defence" />
             </span>
             <p>OT cybersecurity consulting and protection for Australian critical infrastructure.</p>
+            <a className="fsocial" href={company.linkedin} target="_blank" rel="noopener noreferrer" aria-label="Follow OT Cyber Defence on LinkedIn">
+              <LinkedInIcon /> Follow us on LinkedIn
+            </a>
           </div>
           <div>
             <h4>Company</h4>
@@ -46,6 +50,11 @@ export default function Footer() {
               <li>{company.address}</li>
               <li>{company.email ? <a href={`mailto:${company.email}`}>{company.email}</a> : <Placeholder value="" label="email address" />}</li>
               <li>{company.phone ? <a href={`tel:${company.phone.replace(/\s/g, '')}`}>{company.phone}</a> : <Placeholder value="" label="phone number" />}</li>
+              <li>
+                <a href={company.linkedin} target="_blank" rel="noopener noreferrer">
+                  LinkedIn
+                </a>
+              </li>
             </ul>
           </div>
         </div>
