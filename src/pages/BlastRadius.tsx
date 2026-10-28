@@ -18,6 +18,7 @@ import CompliancePanel from '../blast/ui/Compliance.tsx'
 import { SectorContext } from '../blast/ui/context.ts'
 import { complianceGaps, FIX_ADDRESSES } from '../blast/engine/compliance.ts'
 import { img } from '../media.ts'
+import { postForm } from '../lib/forms.ts'
 
 type Step = 0 | 1 | 2 | 3 | 4 | 5
 const STEPS = C.STEP_NAMES
@@ -92,8 +93,6 @@ function initialState(): State {
 }
 
 // Same form backend as the main site (ash-be), sending to admin@ as the spec requires.
-const FORM_API = 'https://ash-be-z3x4.onrender.com/api/tickets/send-form-submission'
-const REVIEW_TO = 'admin@otcyberdefence.com.au'
 
 export default function BlastRadius() {
   const [s, dispatch] = useReducer(reducer, undefined, initialState)
@@ -241,6 +240,9 @@ function Landing({ onStart }: { onStart: () => void }) {
       </p>
       <p className="fine br-centre">{C.privacyPromise}</p>
       <p className="fine br-centre">{C.disclaimer}</p>
+      <p className="fine br-centre">
+        Run a telecommunications network? Try <Link to="/telco-readiness">Telco SOCI Readiness</Link>.
+      </p>
     </div>
   )
 }
@@ -1010,26 +1012,6 @@ function Plan(p: { pretick: boolean; setFixes: (f: FixId[]) => void; inputs: Inp
 }
 
 /* ---------------- Step 5: offer ---------------- */
-async function postForm(f: { formName: string; subject: string; name: string; email: string; message: string; location?: string }) {
-  const r = await fetch(FORM_API, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      formData: {
-        websiteName: 'OT Cyber Defence',
-        formName: f.formName,
-        customerName: f.name,
-        customerEmail: f.email,
-        subject: f.subject,
-        message: f.message,
-        phone: '',
-        location: f.location ?? '',
-      },
-      options: { to: REVIEW_TO, websiteName: 'OT Cyber Defence' },
-    }),
-  })
-  if (!(r.status === 201 || r.ok)) throw new Error(String(r.status))
-}
 
 /** What OTCD receives with a board summary request: the result, not the visitor's network. */
 function summaryMessage(inputs: Inputs, fixes: FixId[], current: R, withFixes: R, company: string) {

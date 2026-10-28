@@ -46,13 +46,17 @@ export default function Privacy() {
               generic settings you chose in the tool, so we can follow up if you would like help.
             </li>
             <li>
+              <b>Telco SOCI Readiness review request and board summary:</b> the same details as for OT Blast Radius,
+              with your organisation type in place of sector, and your result and the generic answers you chose in the tool.
+            </li>
+            <li>
               <b>Emails and calls:</b> the details you give us when you contact us directly.
             </li>
           </ul>
           <p>
-            <b>OT Blast Radius never asks for real network details.</b> It does not ask for IP addresses, hostnames,
+            <b>OT Blast Radius and Telco SOCI Readiness never ask for real network details.</b> They do not ask for IP addresses, hostnames,
             device models, firmware versions, site names or diagrams. The settings you choose are generic, stay in your
-            browser while you use the tool, and are only sent to us if you ask for the board summary or choose to share them
+            browser while you use the tools, and are only sent to us if you ask for the board summary or choose to share them
             with a review request.
           </p>
 
